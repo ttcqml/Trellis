@@ -20,7 +20,7 @@ Before checking, read:
 1. **Get code changes** - Use git diff to get uncommitted code
 2. **Check against specs** - Verify code follows guidelines
 3. **Self-fix** - Fix issues yourself, not just report them
-4. **Run verification** - typecheck and lint
+4. **Run verification** - Verify scene structure and behaviors
 
 ## Important
 
@@ -43,11 +43,25 @@ git diff              # View specific changes
 
 Read relevant specs in `.trellis/spec/` to check code:
 
-- Does it follow directory structure conventions
-- Does it follow naming conventions
-- Does it follow code patterns
-- Are there missing types
-- Are there potential bugs
+**Entity checks:**
+- Required behaviors are added (health, faction, collision)
+- Collision layers are correct
+- FlowKit events are properly configured
+
+**Scene checks:**
+- System node exists for FlowKit events
+- Entity instances are properly configured
+- Scene organization follows conventions
+
+**FlowKit checks:**
+- Event targets match capabilities (Entity vs System)
+- Required behaviors exist for events
+- Actions are in correct order
+
+**AI checks:**
+- Beehave tree structure follows patterns
+- Blackboard keys are consistent
+- Condition/action pairs are correct
 
 ### Step 3: Self-Fix
 
@@ -59,9 +73,9 @@ After finding issues:
 
 ### Step 4: Run Verification
 
-Run project's lint and typecheck commands to verify changes.
+Verify scene files are valid and test in Godot if possible.
 
-If failed, fix issues and re-run.
+If issues found, fix and re-check.
 
 ---
 
@@ -75,15 +89,15 @@ Each entry's `reason` field becomes a marker: `{REASON}_FINISH`
 
 For example, if check.jsonl contains:
 ```json
-{"file": "...", "reason": "TypeCheck"}
-{"file": "...", "reason": "Lint"}
-{"file": "...", "reason": "CodeReview"}
+{"file": "...", "reason": "EntityCheck"}
+{"file": "...", "reason": "SceneCheck"}
+{"file": "...", "reason": "FlowKitCheck"}
 ```
 
 You MUST output these markers when each check passes:
-- `TYPECHECK_FINISH` - After typecheck passes
-- `LINT_FINISH` - After lint passes
-- `CODEREVIEW_FINISH` - After code review passes
+- `ENTITYCHECK_FINISH` - After entity check passes
+- `SCENECHECK_FINISH` - After scene check passes
+- `FLOWKITCHECK_FINISH` - After FlowKit check passes
 
 If check.jsonl doesn't exist or has no reasons, output: `ALL_CHECKS_FINISH`
 
@@ -98,13 +112,13 @@ If check.jsonl doesn't exist or has no reasons, output: `ALL_CHECKS_FINISH`
 
 ### Files Checked
 
-- src/components/Feature.tsx
-- src/hooks/useFeature.ts
+- Game_flowkit/Entity/Monster.tscn
+- Game_flowkit/Scenes/Level.tscn
 
 ### Issues Found and Fixed
 
-1. `<file>:<line>` - <what was fixed>
-2. `<file>:<line>` - <what was fixed>
+1. `Monster.tscn` - Added missing health behavior
+2. `Level.tscn` - Fixed wrong collision layer
 
 ### Issues Not Fixed
 
@@ -112,8 +126,9 @@ If check.jsonl doesn't exist or has no reasons, output: `ALL_CHECKS_FINISH`
 
 ### Verification Results
 
-- TypeCheck: Passed TYPECHECK_FINISH
-- Lint: Passed LINT_FINISH
+- Entity Check: Passed ENTITYCHECK_FINISH
+- Scene Check: Passed SCENECHECK_FINISH
+- FlowKit Check: Passed FLOWKITCHECK_FINISH
 
 ### Summary
 

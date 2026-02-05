@@ -1,0 +1,54 @@
+# Skill System Guidelines
+
+> Best practices for skill and ability development in this Godot project.
+
+---
+
+## Overview
+
+This directory contains guidelines for developing skills, abilities, and combat mechanics using SkillData resources and the SkillBoxComponent system.
+
+---
+
+## Guidelines Index
+
+| Guide | Description | Status |
+|-------|-------------|--------|
+| [SkillData Guidelines](./skill-data-guidelines.md) | SkillData resource structure | To be filled |
+| [Attack Skill Patterns](./attack-skill-patterns.md) | Attack skill configuration | To be filled |
+| [Buff Skill Patterns](./buff-skill-patterns.md) | Buff/passive skill patterns | To be filled |
+| [Bullet Motion Patterns](./bullet-motion-patterns.md) | Projectile movement components | To be filled |
+| [Skill Event Guidelines](./skill-event-guidelines.md) | AnimationEvent, FireEvent, etc. | To be filled |
+
+---
+
+## Skill System Architecture
+
+```
+SkillBoxComponent
+├── init_attack_skill_datas    # Auto-fire attack skills
+├── init_skill_datas           # Triggered normal skills
+└── init_halo_skill_datas      # Passive aura skills
+```
+
+---
+
+## Core Principle
+
+**Skills = SkillData + Events + Bullets**
+
+Skills are data-driven. Combat logic is defined through:
+1. SkillData resource (configuration)
+2. Skill events (timing and triggers)
+3. Bullet entities (projectiles)
+
+---
+
+## How to Fill These Guidelines
+
+For each guideline file:
+
+1. Document your project's **skill patterns**
+2. Include **SkillData examples**
+3. List **event configuration patterns**
+4. Add **common skill bugs** your team has encountered

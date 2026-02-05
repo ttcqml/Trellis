@@ -19,7 +19,7 @@ Before debugging, read:
 
 1. **Understand issues** - Analyze error messages or reported issues
 2. **Fix against specs** - Fix issues following dev specs
-3. **Verify fixes** - Run typecheck to ensure no new issues
+3. **Verify fixes** - Verify scene files and behaviors are correct
 4. **Report results** - Report fix status
 
 ---
@@ -53,7 +53,7 @@ For each issue:
 
 ### Step 4: Verify
 
-Run project's lint and typecheck commands to verify fixes.
+Verify scene files are valid and behaviors are correctly configured.
 
 If fix introduces new issues:
 
@@ -79,8 +79,9 @@ If fix introduces new issues:
 
 ### Verification
 
-- TypeCheck: Pass
-- Lint: Pass
+- Scene files: Valid
+- Entity behaviors: Configured
+- FlowKit events: Working
 
 ### Summary
 
@@ -102,5 +103,5 @@ Fixed X/Y issues. Z issues require discussion.
 - Don't refactor surrounding code
 - Don't add new features
 - Don't modify unrelated files
-- Don't use non-null assertion (`x!` operator)
+- Don't add unnecessary behaviors or events
 - Don't execute git commit

@@ -41,9 +41,11 @@ Before implementing, read:
 
 Read relevant specs based on task type:
 
-- Backend: `.trellis/spec/backend/`
-- Frontend: `.trellis/spec/frontend/`
-- Shared: `.trellis/spec/shared/`
+- Entity: `.trellis/spec/entity/`
+- Scene: `.trellis/spec/scene/`
+- Skill: `.trellis/spec/skill/`
+- AI: `.trellis/spec/ai/`
+- FlowKit: `.trellis/spec/flowkit/`
 
 ### 2. Understand Requirements
 
@@ -58,10 +60,15 @@ Read the task's prd.md and info.md:
 - Write code following specs and technical design
 - Follow existing code patterns
 - Only do what's required, no over-engineering
+- Use the appropriate skill for creation:
+  - `/godot-role-builder` for entities
+  - `/godot-scene-builder` for scenes
+  - `/godot-event-builder` for FlowKit events
+  - `/godot-behavior-tree-builder` for AI
 
 ### 4. Verify
 
-Run project's lint and typecheck commands to verify changes.
+Verify scene files are valid and behaviors are correctly configured.
 
 ---
 
@@ -72,18 +79,18 @@ Run project's lint and typecheck commands to verify changes.
 
 ### Files Modified
 
-- `src/components/Feature.tsx` - New component
-- `src/hooks/useFeature.ts` - New hook
+- `Game_flowkit/Entity/Monster.tscn` - New entity
+- `Game_flowkit/Scenes/Level.tscn` - Updated scene
 
 ### Implementation Summary
 
-1. Created Feature component...
-2. Added useFeature hook...
+1. Created Monster entity with health and faction behaviors...
+2. Added death event using FlowKit...
 
 ### Verification Results
 
-- Lint: Passed
-- TypeCheck: Passed
+- Scene files: Valid
+- Behaviors: Configured
 ```
 
 ---
@@ -93,4 +100,4 @@ Run project's lint and typecheck commands to verify changes.
 - Follow existing code patterns
 - Don't add unnecessary abstractions
 - Only do what's required, no over-engineering
-- Keep code readable
+- Keep scenes and entities well-organized

@@ -40,8 +40,11 @@ This shows: developer identity, git status, current task (if any), active tasks.
 ### Step 3: Read Guidelines Index
 
 ```bash
-cat .trellis/spec/frontend/index.md  # Frontend guidelines
-cat .trellis/spec/backend/index.md   # Backend guidelines
+cat .trellis/spec/entity/index.md    # Entity guidelines
+cat .trellis/spec/scene/index.md     # Scene guidelines
+cat .trellis/spec/skill/index.md     # Skill guidelines
+cat .trellis/spec/ai/index.md        # AI/Beehave guidelines
+cat .trellis/spec/flowkit/index.md   # FlowKit guidelines
 cat .trellis/spec/guides/index.md    # Thinking guides
 ```
 
@@ -58,8 +61,8 @@ When user describes a task, classify it:
 | Type | Criteria | Workflow |
 |------|----------|----------|
 | **Question** | User asks about code, architecture, or how something works | Answer directly |
-| **Trivial Fix** | Typo fix, comment update, single-line change, < 5 minutes | Direct Edit |
-| **Development Task** | Any code change that: modifies logic, adds features, fixes bugs, touches multiple files | **Task Workflow** |
+| **Trivial Fix** | Typo fix, comment update, single-line change | Direct Edit |
+| **Development Task** | Any change that: modifies logic, creates entities, adds features | **Task Workflow** |
 
 ### Decision Rule
 
@@ -92,7 +95,7 @@ For questions or trivial fixes, work directly:
 
 Before creating anything, understand what user wants:
 - What is the goal?
-- What type of development? (frontend / backend / fullstack)
+- What type of development? (entity / scene / skill / ai)
 - Any specific requirements or constraints?
 
 If unclear, ask clarifying questions.
@@ -107,7 +110,7 @@ Task(
   prompt: "Analyze the codebase for this task:
 
   Task: <user's task description>
-  Type: <frontend/backend/fullstack>
+  Type: <entity/scene/skill/ai>
 
   Please find:
   1. Relevant spec files in .trellis/spec/
@@ -144,7 +147,7 @@ Initialize default context:
 
 ```bash
 ./.trellis/scripts/task.sh init-context "$TASK_DIR" <type>
-# type: backend | frontend | fullstack
+# type: entity | scene | skill | ai
 ```
 
 Add specs found by Research Agent:
@@ -195,7 +198,8 @@ Task(
   prompt: "Implement the task described in prd.md.
 
   Follow all specs that have been injected into your context.
-  Run lint and typecheck before finishing.",
+  Use godot-role-builder, godot-scene-builder, godot-event-builder,
+  or godot-behavior-tree-builder skills as appropriate.",
   model: "opus"
 )
 ```
@@ -210,17 +214,17 @@ Task(
   prompt: "Review all code changes against the specs.
 
   Fix any issues you find directly.
-  Ensure lint and typecheck pass.",
+  Verify entity behaviors, FlowKit events, and AI trees are properly configured.",
   model: "opus"
 )
 ```
 
 ### Step 9: Complete `[AI]`
 
-1. Verify lint and typecheck pass
+1. Verify scene structure and behaviors are correct
 2. Report what was implemented
 3. Remind user to:
-   - Test the changes
+   - Test the changes in Godot editor
    - Commit when ready
    - Run `/trellis:record-session` to record this session
 

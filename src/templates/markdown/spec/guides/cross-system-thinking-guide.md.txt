@@ -1,0 +1,98 @@
+# Cross-System Thinking Guide
+
+> **Purpose**: Think through Entity-Scene-Skill-AI relationships before implementing.
+
+---
+
+## The Problem
+
+**Most bugs happen at system boundaries**, not within systems.
+
+Common cross-system bugs:
+- FlowKit event expects behavior, entity doesn't have it
+- Beehave tree reads blackboard key that's never set
+- Skill fires but entity lacks required components
+- Scene references entity that doesn't exist
+
+---
+
+## Before Implementing Cross-System Features
+
+### Step 1: Map the System Flow
+
+Draw out how systems interact:
+
+```
+Entity (behaviors) → FlowKit (events) → AI (behavior tree) → Skills
+```
+
+For each connection, ask:
+- What data/signals flow between systems?
+- What dependencies exist?
+- What could go wrong?
+
+### Step 2: Identify Dependencies
+
+| System | Depends On | Provides |
+|--------|-----------|----------|
+| Entity | Behaviors | Events, conditions, actions |
+| Scene | Entities | System events |
+| Skill | SkillBox behavior | Damage, bullets |
+| AI | behavior_tree behavior | Entity control |
+| FlowKit | Behaviors | Event logic |
+
+### Step 3: Verify Dependencies
+
+Before implementing:
+- Does entity have required behaviors?
+- Are collision layers configured?
+- Does FlowKit event target correct node type?
+- Are blackboard keys consistent?
+
+---
+
+## Common Cross-System Mistakes
+
+### Mistake 1: Missing Behavior
+
+**Bad**: FlowKit event uses `health` condition but entity lacks `health` behavior
+
+**Good**: Always add required behaviors before creating events
+
+### Mistake 2: Wrong Event Target
+
+**Bad**: Using Entity event on System node
+
+**Good**: Check capability matrix - Entity vs System
+
+### Mistake 3: Blackboard Mismatch
+
+**Bad**: Condition reads "target" but action writes "enemy"
+
+**Good**: Use consistent blackboard key names
+
+---
+
+## Checklist for Cross-System Features
+
+Before implementation:
+- [ ] Mapped system dependencies
+- [ ] Identified required behaviors
+- [ ] Checked event target compatibility
+- [ ] Verified blackboard key consistency
+
+After implementation:
+- [ ] Tested in Godot editor
+- [ ] Verified events trigger correctly
+- [ ] Checked AI behavior tree execution
+- [ ] Confirmed skills fire properly
+
+---
+
+## When to Create System Documentation
+
+Create detailed docs when:
+- Feature spans 3+ systems
+- Multiple entities are involved
+- Event chains are complex
+- Feature has caused bugs before

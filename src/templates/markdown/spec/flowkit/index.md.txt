@@ -1,0 +1,63 @@
+# FlowKit Event System Guidelines
+
+> Comprehensive guide to the FlowKit visual scripting framework.
+
+---
+
+## Overview
+
+FlowKit is an event-driven visual scripting system for Godot. It enables game logic through declarative Event-Condition-Action patterns without writing code.
+
+---
+
+## Guidelines Index
+
+| Guide | Description | Status |
+|-------|-------------|--------|
+| [Event Reference](./event-reference.md) | Events reference | To be filled |
+| [Condition Reference](./condition-reference.md) | Conditions reference | To be filled |
+| [Action Reference](./action-reference.md) | Actions reference | To be filled |
+| [Behavior Reference](./behavior-reference.md) | Behaviors reference | To be filled |
+| [API Usage Guidelines](./api-usage-guidelines.md) | FlowKitSheetCreatorStatic | To be filled |
+| [Capability Matrix](./capability-matrix.md) | Node type capabilities | To be filled |
+
+---
+
+## FlowKit Architecture
+
+```
+Scene (.tscn)
+├── System Node              # Global system events
+├── Entity Nodes             # Entity-specific events
+│   └── flowkit_behaviors    # Behavior meta
+└── Event Sheet (.tres)      # Auto-saved to addons/flowkit/saved/
+```
+
+---
+
+## Core Concepts
+
+### Event Blocks
+
+Each event block contains:
+- **Event**: Trigger condition (when)
+- **Conditions**: Filter conditions (if)
+- **Actions**: What to do (then)
+
+### Node Types
+
+| Type | Description |
+|------|-------------|
+| System | Global game events |
+| Entity | Game object events |
+
+---
+
+## How to Fill These Guidelines
+
+For each guideline file:
+
+1. Document your project's **FlowKit patterns**
+2. Include **event configuration examples**
+3. List **common event/condition/action combos**
+4. Add **FlowKit debugging tips**

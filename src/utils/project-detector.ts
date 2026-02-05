@@ -3,165 +3,51 @@ import path from "node:path";
 
 /**
  * Project type detected by analyzing project files
+ * For Godot game development workflow
  */
-export type ProjectType = "frontend" | "backend" | "fullstack" | "unknown";
+export type ProjectType = "godot" | "unknown";
 
 /**
- * Files that indicate a frontend project
+ * Files that indicate a Godot project
  */
-const FRONTEND_INDICATORS = [
-  // Package managers with frontend deps
-  "package.json", // Will check for frontend dependencies
-  // Build tools
-  "vite.config.ts",
-  "vite.config.js",
-  "next.config.js",
-  "next.config.ts",
-  "next.config.mjs",
-  "nuxt.config.ts",
-  "nuxt.config.js",
-  "webpack.config.js",
-  "rollup.config.js",
-  // Framework configs
-  "svelte.config.js",
-  "astro.config.mjs",
-  "angular.json",
-  "vue.config.js",
+const GODOT_INDICATORS = [
+  // Godot project file
+  "project.godot",
+  // Common Godot directories
+  "addons/",
   // Source directories
-  "src/App.tsx",
-  "src/App.jsx",
-  "src/App.vue",
-  "src/app/page.tsx",
-  "app/page.tsx",
-  "pages/index.tsx",
-  "pages/index.jsx",
+  "Game_flowkit/",
+  "Framework/",
+  // FlowKit addon
+  "addons/flowkit/",
+  // Beehave addon
+  "addons/beehave/",
 ];
 
 /**
- * Files that indicate a backend project
+ * File extensions that indicate a Godot project
  */
-const BACKEND_INDICATORS = [
-  // Go
-  "go.mod",
-  "go.sum",
-  // Rust
-  "Cargo.toml",
-  "Cargo.lock",
-  // Python
-  "requirements.txt",
-  "pyproject.toml",
-  "setup.py",
-  "Pipfile",
-  "poetry.lock",
-  // Java/Kotlin
-  "pom.xml",
-  "build.gradle",
-  "build.gradle.kts",
-  // Ruby
-  "Gemfile",
-  // PHP
-  "composer.json",
-  // .NET
-  "*.csproj",
-  "*.fsproj",
-  // Elixir
-  "mix.exs",
-  // Node.js backend indicators
-  "server.ts",
-  "server.js",
-  "src/server.ts",
-  "src/index.ts", // Could be backend entry
-];
+const GODOT_EXTENSIONS = [".gd", ".tscn", ".tres"];
 
 /**
- * Frontend dependencies in package.json
+ * Check if a file or directory exists in the project directory
  */
-const FRONTEND_DEPS = [
-  "react",
-  "vue",
-  "svelte",
-  "angular",
-  "@angular/core",
-  "next",
-  "nuxt",
-  "astro",
-  "solid-js",
-  "preact",
-  "lit",
-  "@remix-run/react",
-];
-
-/**
- * Backend dependencies in package.json
- */
-const BACKEND_DEPS = [
-  "express",
-  "fastify",
-  "hono",
-  "koa",
-  "hapi",
-  "nest",
-  "@nestjs/core",
-  "fastapi",
-  "flask",
-  "django",
-];
-
-/**
- * Check if a file exists in the project directory
- */
-function fileExists(cwd: string, filename: string): boolean {
-  // Handle glob patterns like *.csproj
-  if (filename.includes("*")) {
-    const dir = path.dirname(filename) || ".";
-    const pattern = path.basename(filename);
-    const searchDir = path.join(cwd, dir);
-
-    if (!fs.existsSync(searchDir)) return false;
-
-    try {
-      const files = fs.readdirSync(searchDir);
-      const regex = new RegExp(
-        "^" + pattern.replace(/\*/g, ".*").replace(/\./g, "\\.") + "$",
-      );
-      return files.some((f) => regex.test(f));
-    } catch {
-      return false;
-    }
-  }
-
-  return fs.existsSync(path.join(cwd, filename));
+function pathExists(cwd: string, filename: string): boolean {
+  const fullPath = path.join(cwd, filename);
+  return fs.existsSync(fullPath);
 }
 
 /**
- * Check package.json for frontend/backend dependencies
+ * Check if directory contains files with Godot extensions
  */
-function checkPackageJson(cwd: string): {
-  hasFrontend: boolean;
-  hasBackend: boolean;
-} {
-  const packageJsonPath = path.join(cwd, "package.json");
-
-  if (!fs.existsSync(packageJsonPath)) {
-    return { hasFrontend: false, hasBackend: false };
-  }
-
+function hasGodotFiles(cwd: string): boolean {
   try {
-    const content = fs.readFileSync(packageJsonPath, "utf-8");
-    const pkg = JSON.parse(content);
-    const allDeps = {
-      ...pkg.dependencies,
-      ...pkg.devDependencies,
-    };
-
-    const depNames = Object.keys(allDeps ?? {});
-
-    const hasFrontend = FRONTEND_DEPS.some((dep) => depNames.includes(dep));
-    const hasBackend = BACKEND_DEPS.some((dep) => depNames.includes(dep));
-
-    return { hasFrontend, hasBackend };
+    const files = fs.readdirSync(cwd, { recursive: true }) as string[];
+    return files.some((file) =>
+      GODOT_EXTENSIONS.some((ext) => file.endsWith(ext)),
+    );
   } catch {
-    return { hasFrontend: false, hasBackend: false };
+    return false;
   }
 }
 
@@ -172,23 +58,14 @@ function checkPackageJson(cwd: string): {
  * @returns Detected project type
  */
 export function detectProjectType(cwd: string): ProjectType {
-  // Check for file indicators
-  const hasFrontendFiles = FRONTEND_INDICATORS.some((f) => fileExists(cwd, f));
-  const hasBackendFiles = BACKEND_INDICATORS.some((f) => fileExists(cwd, f));
+  // Check for Godot project indicators
+  const hasGodotIndicators = GODOT_INDICATORS.some((f) => pathExists(cwd, f));
 
-  // Check package.json dependencies
-  const { hasFrontend: hasFrontendDeps, hasBackend: hasBackendDeps } =
-    checkPackageJson(cwd);
+  // Check for Godot file extensions
+  const hasGodotExtensions = hasGodotFiles(cwd);
 
-  const isFrontend = hasFrontendFiles || hasFrontendDeps;
-  const isBackend = hasBackendFiles || hasBackendDeps;
-
-  if (isFrontend && isBackend) {
-    return "fullstack";
-  } else if (isFrontend) {
-    return "frontend";
-  } else if (isBackend) {
-    return "backend";
+  if (hasGodotIndicators || hasGodotExtensions) {
+    return "godot";
   }
 
   return "unknown";
@@ -199,13 +76,9 @@ export function detectProjectType(cwd: string): ProjectType {
  */
 export function getProjectTypeDescription(type: ProjectType): string {
   switch (type) {
-    case "frontend":
-      return "Frontend project (UI/client-side)";
-    case "backend":
-      return "Backend project (server-side/API)";
-    case "fullstack":
-      return "Fullstack project (frontend + backend)";
+    case "godot":
+      return "Godot project (game development)";
     case "unknown":
-      return "Unknown project type (defaults to fullstack)";
+      return "Unknown project type (defaults to Godot)";
   }
 }

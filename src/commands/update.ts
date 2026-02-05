@@ -54,23 +54,14 @@ import {
 
 import {
   guidesIndexContent,
-  guidesCrossLayerThinkingGuideContent,
+  guidesCrossSystemThinkingGuideContent,
   guidesCodeReuseThinkingGuideContent,
-  // Backend structure (multi-doc)
-  backendIndexContent,
-  backendDirectoryStructureContent,
-  backendDatabaseGuidelinesContent,
-  backendLoggingGuidelinesContent,
-  backendQualityGuidelinesContent,
-  backendErrorHandlingContent,
-  // Frontend structure (multi-doc)
-  frontendIndexContent,
-  frontendDirectoryStructureContent,
-  frontendTypeSafetyContent,
-  frontendHookGuidelinesContent,
-  frontendComponentGuidelinesContent,
-  frontendQualityGuidelinesContent,
-  frontendStateManagementContent,
+  // Godot structure
+  entityIndexContent,
+  sceneIndexContent,
+  skillIndexContent,
+  aiIndexContent,
+  flowkitIndexContent,
   // Workspace
   workspaceIndexContent,
 } from "../templates/markdown/index.js";
@@ -109,7 +100,7 @@ interface ChangeAnalysis {
 type ConflictAction = "overwrite" | "skip" | "create-new";
 
 // Paths that should never be touched (true user data)
-// Note: frontend/backend spec dirs removed - they should be created if missing,
+// Note: spec directories (entity/scene/skill/ai/flowkit) are created if missing,
 // and existing files are protected by hash-based modification tracking
 const PROTECTED_PATHS = [
   `${DIR_NAMES.WORKFLOW}/${DIR_NAMES.WORKSPACE}`, // workspace/
@@ -163,60 +154,28 @@ function collectTemplateFiles(_cwd: string): Map<string, string> {
   // Spec - guides
   files.set(`${PATHS.SPEC}/guides/index.md`, guidesIndexContent);
   files.set(
-    `${PATHS.SPEC}/guides/cross-layer-thinking-guide.md`,
-    guidesCrossLayerThinkingGuideContent,
+    `${PATHS.SPEC}/guides/cross-system-thinking-guide.md`,
+    guidesCrossSystemThinkingGuideContent,
   );
   files.set(
     `${PATHS.SPEC}/guides/code-reuse-thinking-guide.md`,
     guidesCodeReuseThinkingGuideContent,
   );
 
-  // Spec - backend (created if missing, protected by hash tracking if modified)
-  files.set(`${PATHS.SPEC}/backend/index.md`, backendIndexContent);
-  files.set(
-    `${PATHS.SPEC}/backend/directory-structure.md`,
-    backendDirectoryStructureContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/backend/database-guidelines.md`,
-    backendDatabaseGuidelinesContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/backend/logging-guidelines.md`,
-    backendLoggingGuidelinesContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/backend/quality-guidelines.md`,
-    backendQualityGuidelinesContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/backend/error-handling.md`,
-    backendErrorHandlingContent,
-  );
+  // Spec - entity (created if missing, protected by hash tracking if modified)
+  files.set(`${PATHS.SPEC}/entity/index.md`, entityIndexContent);
 
-  // Spec - frontend (created if missing, protected by hash tracking if modified)
-  files.set(`${PATHS.SPEC}/frontend/index.md`, frontendIndexContent);
-  files.set(
-    `${PATHS.SPEC}/frontend/directory-structure.md`,
-    frontendDirectoryStructureContent,
-  );
-  files.set(`${PATHS.SPEC}/frontend/type-safety.md`, frontendTypeSafetyContent);
-  files.set(
-    `${PATHS.SPEC}/frontend/hook-guidelines.md`,
-    frontendHookGuidelinesContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/frontend/component-guidelines.md`,
-    frontendComponentGuidelinesContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/frontend/quality-guidelines.md`,
-    frontendQualityGuidelinesContent,
-  );
-  files.set(
-    `${PATHS.SPEC}/frontend/state-management.md`,
-    frontendStateManagementContent,
-  );
+  // Spec - scene (created if missing, protected by hash tracking if modified)
+  files.set(`${PATHS.SPEC}/scene/index.md`, sceneIndexContent);
+
+  // Spec - skill (created if missing, protected by hash tracking if modified)
+  files.set(`${PATHS.SPEC}/skill/index.md`, skillIndexContent);
+
+  // Spec - ai (created if missing, protected by hash tracking if modified)
+  files.set(`${PATHS.SPEC}/ai/index.md`, aiIndexContent);
+
+  // Spec - flowkit (created if missing, protected by hash tracking if modified)
+  files.set(`${PATHS.SPEC}/flowkit/index.md`, flowkitIndexContent);
 
   // Claude commands (in trellis/ subdirectory for namespace)
   const claudeCommands = getCommandTemplates("claude-code");

@@ -13,24 +13,19 @@ import {
 // Import markdown templates
 import {
   agentProgressIndexContent,
-  // Backend structure (multi-doc)
-  backendIndexContent,
-  backendDirectoryStructureContent,
-  backendDatabaseGuidelinesContent,
-  backendLoggingGuidelinesContent,
-  backendQualityGuidelinesContent,
-  backendErrorHandlingContent,
-  // Frontend structure (multi-doc)
-  frontendIndexContent,
-  frontendDirectoryStructureContent,
-  frontendTypeSafetyContent,
-  frontendHookGuidelinesContent,
-  frontendComponentGuidelinesContent,
-  frontendQualityGuidelinesContent,
-  frontendStateManagementContent,
+  // Entity structure
+  entityIndexContent,
+  // Scene structure
+  sceneIndexContent,
+  // Skill structure
+  skillIndexContent,
+  // AI structure
+  aiIndexContent,
+  // FlowKit structure
+  flowkitIndexContent,
   // Guides structure
   guidesIndexContent,
-  guidesCrossLayerThinkingGuideContent,
+  guidesCrossSystemThinkingGuideContent,
   guidesCodeReuseThinkingGuideContent,
 } from "../templates/markdown/index.js";
 
@@ -70,7 +65,6 @@ export async function createWorkflowStructure(
   cwd: string,
   options?: WorkflowOptions,
 ): Promise<void> {
-  const projectType = options?.projectType ?? "fullstack";
   const multiAgent = options?.multiAgent ?? false;
 
   // Create base .trellis directory
@@ -111,25 +105,57 @@ export async function createWorkflowStructure(
     );
   }
 
-  // Create spec templates based on project type
+  // Create spec templates for Godot development
   // These are NOT dogfooded - they are generic templates for new projects
-  await createSpecTemplates(cwd, projectType);
+  await createSpecTemplates(cwd);
 }
 
-async function createSpecTemplates(
-  cwd: string,
-  projectType: ProjectType,
-): Promise<void> {
+async function createSpecTemplates(cwd: string): Promise<void> {
   // Ensure spec directory exists
   ensureDir(path.join(cwd, PATHS.SPEC));
+
+  // Entity spec
+  ensureDir(path.join(cwd, `${PATHS.SPEC}/entity`));
+  await writeFile(
+    path.join(cwd, `${PATHS.SPEC}/entity`, "index.md"),
+    entityIndexContent,
+  );
+
+  // Scene spec
+  ensureDir(path.join(cwd, `${PATHS.SPEC}/scene`));
+  await writeFile(
+    path.join(cwd, `${PATHS.SPEC}/scene`, "index.md"),
+    sceneIndexContent,
+  );
+
+  // Skill spec
+  ensureDir(path.join(cwd, `${PATHS.SPEC}/skill`));
+  await writeFile(
+    path.join(cwd, `${PATHS.SPEC}/skill`, "index.md"),
+    skillIndexContent,
+  );
+
+  // AI spec
+  ensureDir(path.join(cwd, `${PATHS.SPEC}/ai`));
+  await writeFile(
+    path.join(cwd, `${PATHS.SPEC}/ai`, "index.md"),
+    aiIndexContent,
+  );
+
+  // FlowKit spec
+  ensureDir(path.join(cwd, `${PATHS.SPEC}/flowkit`));
+  await writeFile(
+    path.join(cwd, `${PATHS.SPEC}/flowkit`, "index.md"),
+    flowkitIndexContent,
+  );
 
   // Guides - always created
   ensureDir(path.join(cwd, `${PATHS.SPEC}/guides`));
   const guidesDocs: DocDefinition[] = [
     { name: "index.md", content: guidesIndexContent },
     {
-      name: "cross-layer-thinking-guide.md",
-      content: guidesCrossLayerThinkingGuideContent,
+      name: "cross-system-thinking-guide.md",
+      content: guidesCrossSystemThinkingGuideContent,
     },
     {
       name: "code-reuse-thinking-guide.md",
@@ -142,78 +168,5 @@ async function createSpecTemplates(
       path.join(cwd, `${PATHS.SPEC}/guides`, doc.name),
       doc.content,
     );
-  }
-
-  // Backend spec - for backend/fullstack/unknown
-  if (
-    projectType === "backend" ||
-    projectType === "fullstack" ||
-    projectType === "unknown"
-  ) {
-    ensureDir(path.join(cwd, `${PATHS.SPEC}/backend`));
-    const backendDocs: DocDefinition[] = [
-      { name: "index.md", content: backendIndexContent },
-      {
-        name: "directory-structure.md",
-        content: backendDirectoryStructureContent,
-      },
-      {
-        name: "database-guidelines.md",
-        content: backendDatabaseGuidelinesContent,
-      },
-      {
-        name: "logging-guidelines.md",
-        content: backendLoggingGuidelinesContent,
-      },
-      {
-        name: "quality-guidelines.md",
-        content: backendQualityGuidelinesContent,
-      },
-      { name: "error-handling.md", content: backendErrorHandlingContent },
-    ];
-
-    for (const doc of backendDocs) {
-      await writeFile(
-        path.join(cwd, `${PATHS.SPEC}/backend`, doc.name),
-        doc.content,
-      );
-    }
-  }
-
-  // Frontend spec - for frontend/fullstack/unknown
-  if (
-    projectType === "frontend" ||
-    projectType === "fullstack" ||
-    projectType === "unknown"
-  ) {
-    ensureDir(path.join(cwd, `${PATHS.SPEC}/frontend`));
-    const frontendDocs: DocDefinition[] = [
-      { name: "index.md", content: frontendIndexContent },
-      {
-        name: "directory-structure.md",
-        content: frontendDirectoryStructureContent,
-      },
-      { name: "type-safety.md", content: frontendTypeSafetyContent },
-      { name: "hook-guidelines.md", content: frontendHookGuidelinesContent },
-      {
-        name: "component-guidelines.md",
-        content: frontendComponentGuidelinesContent,
-      },
-      {
-        name: "quality-guidelines.md",
-        content: frontendQualityGuidelinesContent,
-      },
-      {
-        name: "state-management.md",
-        content: frontendStateManagementContent,
-      },
-    ];
-
-    for (const doc of frontendDocs) {
-      await writeFile(
-        path.join(cwd, `${PATHS.SPEC}/frontend`, doc.name),
-        doc.content,
-      );
-    }
   }
 }

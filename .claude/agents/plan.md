@@ -117,8 +117,8 @@ Continue to Step 1. The requirement is:
 You receive input via environment variables (set by plan.sh):
 
 ```bash
-PLAN_TASK_NAME    # Task name (e.g., "user-auth")
-PLAN_DEV_TYPE        # Development type: backend | frontend | fullstack
+PLAN_TASK_NAME    # Task name (e.g., "slime-monster")
+PLAN_DEV_TYPE        # Development type: entity | scene | skill | ai
 PLAN_REQUIREMENT     # Requirement description from user
 PLAN_TASK_DIR     # Pre-created task directory path
 ```
@@ -328,26 +328,26 @@ If final validation fails:
 
 ```
 Input:
-  PLAN_TASK_NAME = "add-rate-limiting"
-  PLAN_DEV_TYPE = "backend"
-  PLAN_REQUIREMENT = "Add rate limiting to API endpoints using a sliding window algorithm. Limit to 100 requests per minute per IP. Return 429 status when exceeded."
+  PLAN_TASK_NAME = "slime-monster"
+  PLAN_DEV_TYPE = "entity"
+  PLAN_REQUIREMENT = "Create a Slime monster entity with 100 HP, faction=enemy. Add death event that spawns 2 smaller slimes. Movement speed 80."
 
 Result: ACCEPTED - Clear, specific, has defined behavior
 
 Output:
-  .trellis/tasks/02-03-add-rate-limiting/
-  ├── task.json      # branch: feature/add-rate-limiting, scope: api
+  .trellis/tasks/02-03-slime-monster/
+  ├── task.json      # branch: feature/slime-monster, scope: entity
   ├── prd.md            # Detailed requirements with acceptance criteria
-  ├── implement.jsonl   # Backend specs + existing middleware patterns
-  ├── check.jsonl       # Quality guidelines + API testing specs
-  └── debug.jsonl       # Error handling specs
+  ├── implement.jsonl   # Entity specs + existing monster patterns
+  ├── check.jsonl       # Quality guidelines + entity check specs
+  └── debug.jsonl       # FlowKit event specs
 ```
 
 ### Example: Rejected - Vague Requirement
 
 ```
 Input:
-  PLAN_REQUIREMENT = "Make the API faster"
+  PLAN_REQUIREMENT = "Make the monster better"
 
 Result: REJECTED
 
@@ -356,23 +356,23 @@ Result: REJECTED
 Reason: Unclear or Vague
 
 Details:
-"Make the API faster" does not specify:
-- Which endpoints need optimization
-- Current performance baseline
-- Target performance metrics
-- Acceptable trade-offs (memory, complexity)
+"Make the monster better" does not specify:
+- Which monster to modify
+- What aspect to improve (AI, stats, visuals)
+- Target behavior or performance
+- Acceptable trade-offs
 
 Suggestions:
-- Identify specific slow endpoints with response times
-- Define target latency (e.g., "GET /users should respond in <100ms")
-- Specify if caching, query optimization, or architecture changes are acceptable
+- Identify specific monster entity to modify
+- Define target behavior (e.g., "Monster should chase player within 200 pixels")
+- Specify if AI, stats, or visual changes are needed
 ```
 
 ### Example: Rejected - Too Large
 
 ```
 Input:
-  PLAN_REQUIREMENT = "Add user authentication, authorization, password reset, 2FA, OAuth integration, and audit logging"
+  PLAN_REQUIREMENT = "Create a complete dungeon level with 5 monster types, boss fight, item drops, traps, and save/load system"
 
 Result: REJECTED
 
@@ -381,16 +381,17 @@ Result: REJECTED
 Reason: Too Large / Should Be Split
 
 Details:
-This requirement bundles 6 distinct features that should be implemented separately:
-1. User authentication (login/logout)
-2. Authorization (roles/permissions)
-3. Password reset flow
-4. Two-factor authentication
-5. OAuth integration
-6. Audit logging
+This requirement bundles multiple distinct features that should be implemented separately:
+1. Basic dungeon scene structure
+2. Monster entities (5 types)
+3. Boss entity and fight mechanics
+4. Item drop system
+5. Trap entities
+6. Save/load system
 
 Suggestions:
-- Start with basic authentication first
-- Create separate features for each capability
-- Consider dependencies (auth before authz, etc.)
+- Start with basic dungeon scene first
+- Create monster entities one by one
+- Add boss after basic monsters work
+- Consider dependencies (entities before scene composition)
 ```

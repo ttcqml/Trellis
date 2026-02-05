@@ -1,0 +1,52 @@
+# Scene Development Guidelines
+
+> Best practices for game scene development in this Godot project.
+
+---
+
+## Overview
+
+This directory contains guidelines for developing game scenes that compose multiple entities together. Scenes are the playable levels, UI screens, and game environments.
+
+---
+
+## Guidelines Index
+
+| Guide | Description | Status |
+|-------|-------------|--------|
+| [Directory Structure](./directory-structure.md) | Scene folder organization | To be filled |
+| [Level Guidelines](./level-guidelines.md) | Level scene design patterns | To be filled |
+| [UI Guidelines](./ui-guidelines.md) | UI scene design patterns | To be filled |
+| [Entity Composition](./entity-composition.md) | Entity assembly patterns | To be filled |
+| [FlowKit Scene Patterns](./flowkit-scene-patterns.md) | System events/conditions/actions | To be filled |
+| [Quality Guidelines](./quality-guidelines.md) | Scene quality standards | To be filled |
+
+---
+
+## Scene Types
+
+| Type | Purpose |
+|------|---------|
+| Game Scene | Playable levels |
+| Stage Scene | Combat encounters |
+| UI Scene | User interfaces |
+| Test Scene | Development testing |
+
+---
+
+## Core Principle
+
+**Scene = Entity Assembly + System Logic**
+
+Scenes don't create entities from scratch - they instantiate existing entity scenes and configure them through FlowKit System events.
+
+---
+
+## How to Fill These Guidelines
+
+For each guideline file:
+
+1. Document your project's **actual conventions**
+2. Include **scene structure examples**
+3. List **forbidden patterns** and why
+4. Add **common mistakes** your team has made

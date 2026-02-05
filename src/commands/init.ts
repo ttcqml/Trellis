@@ -111,7 +111,7 @@ export async function init(options: InitOptions): Promise<void> {
     tools = ["cursor", "claude"];
     // Treat unknown as fullstack
     if (detectedType === "unknown") {
-      projectType = "fullstack";
+      projectType = "godot";
     }
   } else if (options.cursor || options.claude) {
     // Use flags
@@ -128,7 +128,7 @@ export async function init(options: InitOptions): Promise<void> {
     // }
     // Treat unknown as fullstack
     if (detectedType === "unknown") {
-      projectType = "fullstack";
+      projectType = "godot";
     }
   } else {
     // Interactive mode
@@ -158,7 +158,7 @@ export async function init(options: InitOptions): Promise<void> {
 
     // Treat unknown as fullstack
     if (detectedType === "unknown") {
-      projectType = "fullstack";
+      projectType = "godot";
     }
   }
 
@@ -298,11 +298,11 @@ function printWhatWeSolve(): void {
     chalk.green("  ✓ ") +
       chalk.white("Spec Injection: Rules enforced per task, not per chat"),
   );
-  // Pain point 3: Missing connections → Cross-Layer Guide
+  // Pain point 3: Missing connections → Cross-System Guide
   console.log(chalk.gray("✗ ") + '"Code works but nothing connects..."');
   console.log(
     chalk.green("  ✓ ") +
-      chalk.white("Cross-Layer Guide: Map data flow before coding"),
+      chalk.white("Cross-System Guide: Map system interactions before coding"),
   );
   // Pain point 4: Code explosion → Plan Agent
   console.log(chalk.gray("✗ ") + '"Asked for a button, got 9000 lines"');

@@ -21,51 +21,60 @@ When you copy-paste or rewrite existing logic:
 
 ```bash
 # Search for similar function names
-grep -r "functionName" .
+grep -r "function_name" .
 
-# Search for similar logic
-grep -r "keyword" .
+# Search for similar scenes
+grep -r "pattern" *.tscn
+
+# Search for behavior usage
+grep -r "flowkit_behaviors" .
 ```
 
 ### Step 2: Ask These Questions
 
 | Question | If Yes... |
 |----------|-----------|
-| Does a similar function exist? | Use or extend it |
-| Is this pattern used elsewhere? | Follow the existing pattern |
-| Could this be a shared utility? | Create it in the right place |
+| Does a similar entity exist? | Use or extend it |
+| Is this behavior pattern used elsewhere? | Follow the existing pattern |
+| Could this be a shared component? | Create it in the right place |
 | Am I copying code from another file? | **STOP** - extract to shared |
 
 ---
 
 ## Common Duplication Patterns
 
-### Pattern 1: Copy-Paste Functions
+### Pattern 1: Copy-Paste Entities
 
-**Bad**: Copying a validation function to another file
+**Bad**: Copying an entity scene to create a variant
 
-**Good**: Extract to shared utilities, import where needed
+**Good**: Extend existing entity with different behaviors
 
-### Pattern 2: Similar Components
+### Pattern 2: Similar FlowKit Events
 
-**Bad**: Creating a new component that's 80% similar to existing
+**Bad**: Creating duplicate event blocks in multiple entities
 
-**Good**: Extend existing component with props/variants
+**Good**: Use System events or shared event patterns
 
 ### Pattern 3: Repeated Constants
 
-**Bad**: Defining the same constant in multiple files
+**Bad**: Defining MAX_HEALTH in multiple entity scripts
 
-**Good**: Single source of truth, import everywhere
+**Good**: Single source of truth in constants file
+
+### Pattern 4: Similar Behavior Trees
+
+**Bad**: Creating near-identical AI trees for each enemy
+
+**Good**: Use parameterized trees with blackboard configuration
 
 ---
 
 ## When to Abstract
 
 **Abstract when**:
-- Same code appears 3+ times
+- Same pattern appears 3+ times
 - Logic is complex enough to have bugs
-- Multiple people might need this
+- Multiple entities might need this
 
 **Don't abstract when**:
 - Only used once
@@ -80,7 +89,7 @@ When you've made similar changes to multiple files:
 
 1. **Review**: Did you catch all instances?
 2. **Search**: Run grep to find any missed
-3. **Consider**: Should this be abstracted?
+3. **Consider**: Should this be a shared behavior?
 
 ---
 
@@ -90,3 +99,4 @@ When you've made similar changes to multiple files:
 - [ ] No copy-pasted logic that should be shared
 - [ ] Constants defined in one place
 - [ ] Similar patterns follow same structure
+- [ ] Entity variations use composition, not duplication

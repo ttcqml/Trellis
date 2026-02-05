@@ -324,9 +324,9 @@ def get_check_context(repo_root: str, task_dir: str) -> str:
         # Fallback: use hardcoded check files + spec.jsonl
         check_files = [
             (".claude/commands/trellis/finish-work.md", "Finish work checklist"),
-            (".claude/commands/trellis/check-cross-layer.md", "Cross-layer check spec"),
-            (".claude/commands/trellis/check-backend.md", "Backend check spec"),
-            (".claude/commands/trellis/check-frontend.md", "Frontend check spec"),
+            (".claude/commands/trellis/check-cross-system.md", "Cross-system check spec"),
+            (".claude/commands/trellis/check-entity.md", "Entity check spec"),
+            (".claude/commands/trellis/check-scene.md", "Scene check spec"),
         ]
         for file_path, description in check_files:
             content = read_file_content(repo_root, file_path)
@@ -408,9 +408,9 @@ def get_debug_context(repo_root: str, task_dir: str) -> str:
             context_parts.append(f"=== {file_path} (Dev spec) ===\n{content}")
 
         check_files = [
-            (".claude/commands/trellis/check-backend.md", "Backend check spec"),
-            (".claude/commands/trellis/check-frontend.md", "Frontend check spec"),
-            (".claude/commands/trellis/check-cross-layer.md", "Cross-layer check spec"),
+            (".claude/commands/trellis/check-entity.md", "Entity check spec"),
+            (".claude/commands/trellis/check-scene.md", "Scene check spec"),
+            (".claude/commands/trellis/check-cross-system.md", "Cross-system check spec"),
         ]
         for file_path, description in check_files:
             content = read_file_content(repo_root, file_path)
@@ -579,10 +579,12 @@ def get_research_context(repo_root: str, task_dir: str | None) -> str:
 
 ```
 {spec_path}/
-├── shared/      # Cross-project common specs (TypeScript, code quality, git)
-├── frontend/    # Frontend standards
-├── backend/     # Backend standards
-└── guides/      # Thinking guides (cross-layer, code reuse, etc.)
+├── entity/      # Entity development specs (Role, behaviors, collision)
+├── scene/       # Scene development specs (level, UI, composition)
+├── skill/       # Skill system specs (SkillData, attack, buff)
+├── ai/          # AI behavior tree specs (Beehave, conditions, actions)
+├── flowkit/     # FlowKit event system specs (events, conditions, actions)
+└── guides/      # Thinking guides (cross-system, code reuse, etc.)
 
 {DIR_WORKFLOW}/big-question/  # Known issues and pitfalls
 ```
@@ -592,7 +594,8 @@ def get_research_context(repo_root: str, task_dir: str | None) -> str:
 - Spec files: `{spec_path}/**/*.md`
 - Known issues: `{DIR_WORKFLOW}/big-question/`
 - Code search: Use Glob and Grep tools
-- Tech solutions: Use mcp__exa__web_search_exa or mcp__exa__get_code_context_exa"""
+- Entity patterns: `Game_flowkit/Entity/`
+- Scene patterns: `Game_flowkit/Scenes/`"""
 
     context_parts.append(project_structure)
 

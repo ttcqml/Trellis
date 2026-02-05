@@ -1,0 +1,44 @@
+# Entity Development Guidelines
+
+> Best practices for game entity development in this Godot project.
+
+---
+
+## Overview
+
+This directory contains guidelines for developing game entities (players, enemies, NPCs, pets) using the FlowKit framework and Beehave behavior trees.
+
+---
+
+## Guidelines Index
+
+| Guide | Description | Status |
+|-------|-------------|--------|
+| [Directory Structure](./directory-structure.md) | Entity folder organization | To be filled |
+| [Role Guidelines](./role-guidelines.md) | Role class usage and configuration | To be filled |
+| [Behavior Guidelines](./behavior-guidelines.md) | FlowKit Behavior configuration | To be filled |
+| [FlowKit Entity Patterns](./flowkit-entity-patterns.md) | Entity events/conditions/actions | To be filled |
+| [Quality Guidelines](./quality-guidelines.md) | Entity quality standards | To be filled |
+| [Collision Guidelines](./collision-guidelines.md) | Collision layer configuration | To be filled |
+
+---
+
+## Entity Types
+
+| Type | Base Class | Description |
+|------|-----------|-------------|
+| Player | FCharacter | Playable character |
+| Monster | FMonster | Enemy entities |
+| NPC | Role | Non-player characters |
+| Pet | Role | Companion entities |
+
+---
+
+## How to Fill These Guidelines
+
+For each guideline file:
+
+1. Document your project's **actual conventions**
+2. Include **GDScript examples** from your codebase
+3. List **forbidden patterns** and why
+4. Add **common mistakes** your team has made

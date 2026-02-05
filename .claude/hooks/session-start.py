@@ -7,7 +7,7 @@ Matcher: "startup" - only runs on normal startup (not resume/clear/compact)
 This hook injects:
 1. Current state (git status, current task, task queue)
 2. Workflow guide
-3. Guidelines index (frontend/backend/guides)
+3. Guidelines index (entity/scene/skill/ai/flowkit/guides)
 4. Session instructions (start.md)
 5. Action directive
 """
@@ -84,18 +84,39 @@ Read and follow all instructions below carefully.
     # 4. Guidelines Index
     print("<guidelines>")
 
-    print("## Frontend")
-    frontend_index = read_file(
-        trellis_dir / "spec" / "frontend" / "index.md", "Not configured"
+    print("## Entity")
+    entity_index = read_file(
+        trellis_dir / "spec" / "entity" / "index.md", "Not configured"
     )
-    print(frontend_index)
+    print(entity_index)
     print()
 
-    print("## Backend")
-    backend_index = read_file(
-        trellis_dir / "spec" / "backend" / "index.md", "Not configured"
+    print("## Scene")
+    scene_index = read_file(
+        trellis_dir / "spec" / "scene" / "index.md", "Not configured"
     )
-    print(backend_index)
+    print(scene_index)
+    print()
+
+    print("## Skill")
+    skill_index = read_file(
+        trellis_dir / "spec" / "skill" / "index.md", "Not configured"
+    )
+    print(skill_index)
+    print()
+
+    print("## AI")
+    ai_index = read_file(
+        trellis_dir / "spec" / "ai" / "index.md", "Not configured"
+    )
+    print(ai_index)
+    print()
+
+    print("## FlowKit")
+    flowkit_index = read_file(
+        trellis_dir / "spec" / "flowkit" / "index.md", "Not configured"
+    )
+    print(flowkit_index)
     print()
 
     print("## Guides")

@@ -8,10 +8,10 @@
 
 **Most bugs and tech debt come from "didn't think of that"**, not from lack of skill:
 
-- Didn't think about what happens at layer boundaries → cross-layer bugs
-- Didn't think about code patterns repeating → duplicated code everywhere
-- Didn't think about edge cases → runtime errors
-- Didn't think about future maintainers → unreadable code
+- Didn't think about system interactions → Entity-FlowKit-AI integration bugs
+- Didn't think about component composition → duplicated behaviors everywhere
+- Didn't think about event flow → FlowKit events not triggering
+- Didn't think about future maintainers → unreadable scenes
 
 These guides help you **ask the right questions before coding**.
 
@@ -22,28 +22,48 @@ These guides help you **ask the right questions before coding**.
 | Guide | Purpose | When to Use |
 |-------|---------|-------------|
 | [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | Identify patterns and reduce duplication | When you notice repeated patterns |
-| [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | Think through data flow across layers | Features spanning multiple layers |
+| [Cross-System Thinking Guide](./cross-system-thinking-guide.md) | Think through Entity-Scene-Skill-AI relationships | Features spanning multiple systems |
+| [FlowKit Thinking Guide](./flowkit-thinking-guide.md) | Design event-driven game logic | Creating FlowKit event blocks |
+| [Component Composition Guide](./component-composition-guide.md) | Compose behaviors and components effectively | Building entities with multiple features |
 
 ---
 
 ## Quick Reference: Thinking Triggers
 
-### When to Think About Cross-Layer Issues
+### When to Think About Cross-System Issues
 
-- [ ] Feature touches 3+ layers (API, Service, Component, Database)
-- [ ] Data format changes between layers
-- [ ] Multiple consumers need the same data
+- [ ] Feature touches 3+ systems (Entity, Scene, Skill, AI)
+- [ ] Data flows between FlowKit events and Beehave trees
+- [ ] Multiple entities need the same behavior
 - [ ] You're not sure where to put some logic
 
-→ Read [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md)
+→ Read [Cross-System Thinking Guide](./cross-system-thinking-guide.md)
+
+### When to Think About FlowKit Design
+
+- [ ] Creating new game logic with events
+- [ ] Choosing between Entity and System events
+- [ ] Designing condition/action combinations
+- [ ] Connecting FlowKit to behavior trees
+
+→ Read [FlowKit Thinking Guide](./flowkit-thinking-guide.md)
+
+### When to Think About Component Composition
+
+- [ ] Entity needs multiple behaviors
+- [ ] Similar entities share common features
+- [ ] Behavior dependencies are complex
+- [ ] You're deciding between inheritance and composition
+
+→ Read [Component Composition Guide](./component-composition-guide.md)
 
 ### When to Think About Code Reuse
 
 - [ ] You're writing similar code to something that exists
 - [ ] You see the same pattern repeated 3+ times
-- [ ] You're adding a new field to multiple places
-- [ ] **You're modifying any constant or config**
-- [ ] **You're creating a new utility/helper function** ← Search first!
+- [ ] You're adding a new field to multiple entities
+- [ ] **You're modifying any constant or resource**
+- [ ] **You're creating a new utility function** ← Search first!
 
 → Read [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)
 
@@ -53,9 +73,15 @@ These guides help you **ask the right questions before coding**.
 
 > **Before changing ANY value, ALWAYS search first!**
 
-```bash
+```gdscript
 # Search for the value you're about to change
-grep -r "value_to_change" .
+# Use Glob/Grep tools or IDE search
+
+# Example: Find all uses of a constant
+grep -r "MAX_HEALTH" .
+
+# Example: Find all uses of a behavior
+grep -r "health" *.tscn
 ```
 
 This single habit prevents most "forgot to update X" bugs.
@@ -67,6 +93,28 @@ This single habit prevents most "forgot to update X" bugs.
 1. **Before coding**: Skim the relevant thinking guide
 2. **During coding**: If something feels repetitive or complex, check the guides
 3. **After bugs**: Add new insights to the relevant guide (learn from mistakes)
+
+---
+
+## Godot-Specific Considerations
+
+### System Relationships
+
+```
+Entity → has Behaviors → enables Events/Conditions/Actions
+Scene → contains Entities → orchestrates with System events
+Skills → attached to Entities → executed via FlowKit or AI
+AI (Beehave) → controls Entity → reads/writes Blackboard
+```
+
+### Common Integration Points
+
+| From | To | Integration |
+|------|-----|-------------|
+| FlowKit | Beehave | behavior_tree behavior |
+| Entity | Scene | Entity composition |
+| Skill | Entity | skill_box behavior |
+| Health | UI | hp_bar behavior |
 
 ---
 

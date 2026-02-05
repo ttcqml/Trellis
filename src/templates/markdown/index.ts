@@ -1,7 +1,7 @@
 /**
  * Markdown templates for Trellis workflow
  *
- * These are GENERIC templates for new projects.
+ * These are GENERIC templates for new Godot projects.
  * Structure templates use .md.txt extension as they are generic templates.
  */
 
@@ -42,55 +42,37 @@ export const workflowGitignoreContent: string =
 // These are NOT dogfooded - they are generic templates for new projects
 // =============================================================================
 
-// Backend structure (multi-doc format)
-export const backendIndexContent: string = readLocalTemplate(
-  "spec/backend/index.md.txt",
-);
-export const backendDirectoryStructureContent: string = readLocalTemplate(
-  "spec/backend/directory-structure.md.txt",
-);
-export const backendDatabaseGuidelinesContent: string = readLocalTemplate(
-  "spec/backend/database-guidelines.md.txt",
-);
-export const backendLoggingGuidelinesContent: string = readLocalTemplate(
-  "spec/backend/logging-guidelines.md.txt",
-);
-export const backendQualityGuidelinesContent: string = readLocalTemplate(
-  "spec/backend/quality-guidelines.md.txt",
-);
-export const backendErrorHandlingContent: string = readLocalTemplate(
-  "spec/backend/error-handling.md.txt",
+// Entity structure
+export const entityIndexContent: string = readLocalTemplate(
+  "spec/entity/index.md.txt",
 );
 
-// Frontend structure (multi-doc format)
-export const frontendIndexContent: string = readLocalTemplate(
-  "spec/frontend/index.md.txt",
+// Scene structure
+export const sceneIndexContent: string = readLocalTemplate(
+  "spec/scene/index.md.txt",
 );
-export const frontendDirectoryStructureContent: string = readLocalTemplate(
-  "spec/frontend/directory-structure.md.txt",
+
+// Skill structure
+export const skillIndexContent: string = readLocalTemplate(
+  "spec/skill/index.md.txt",
 );
-export const frontendTypeSafetyContent: string = readLocalTemplate(
-  "spec/frontend/type-safety.md.txt",
+
+// AI structure
+export const aiIndexContent: string = readLocalTemplate(
+  "spec/ai/index.md.txt",
 );
-export const frontendHookGuidelinesContent: string = readLocalTemplate(
-  "spec/frontend/hook-guidelines.md.txt",
-);
-export const frontendComponentGuidelinesContent: string = readLocalTemplate(
-  "spec/frontend/component-guidelines.md.txt",
-);
-export const frontendQualityGuidelinesContent: string = readLocalTemplate(
-  "spec/frontend/quality-guidelines.md.txt",
-);
-export const frontendStateManagementContent: string = readLocalTemplate(
-  "spec/frontend/state-management.md.txt",
+
+// FlowKit structure
+export const flowkitIndexContent: string = readLocalTemplate(
+  "spec/flowkit/index.md.txt",
 );
 
 // Guides structure
 export const guidesIndexContent: string = readLocalTemplate(
   "spec/guides/index.md.txt",
 );
-export const guidesCrossLayerThinkingGuideContent: string = readLocalTemplate(
-  "spec/guides/cross-layer-thinking-guide.md.txt",
+export const guidesCrossSystemThinkingGuideContent: string = readLocalTemplate(
+  "spec/guides/cross-system-thinking-guide.md.txt",
 );
 export const guidesCodeReuseThinkingGuideContent: string = readLocalTemplate(
   "spec/guides/code-reuse-thinking-guide.md.txt",

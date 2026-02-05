@@ -98,9 +98,9 @@ Task(
 Hook will auto-inject:
 
 - finish-work.md
-- check-cross-layer.md
-- check-backend.md
-- check-frontend.md
+- check-cross-system.md
+- check-entity.md
+- check-scene.md
 - All spec files from check.jsonl
 
 ### action: "debug"

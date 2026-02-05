@@ -45,7 +45,7 @@ Every AI session starts with a blank slate. Unlike human engineers who accumulat
 
 ### Challenge 2: AI Has Generic Knowledge, Not Project-Specific Knowledge
 
-AI models are trained on millions of codebases - they know general patterns for React, TypeScript, databases, etc. But they don't know YOUR project's conventions.
+AI models are trained on millions of codebases - they know general patterns for GDScript, Godot, game development, etc. But they don't know YOUR project's conventions.
 
 **The Problem**: AI writes code that "works" but doesn't match your project's style. It uses patterns that conflict with existing code. It makes decisions that violate unwritten team rules.
 
@@ -77,30 +77,52 @@ Even after injecting guidelines, AI has limited context window. As conversation 
 |       |-- task.json       # Task metadata
 |       \-- prd.md          # Requirements doc
 |-- spec/                   # "AI Training Data" - project knowledge
-|   |-- frontend/           # Frontend conventions
-|   |-- backend/            # Backend conventions
+|   |-- entity/             # Entity conventions
+|   |-- scene/              # Scene conventions
+|   |-- skill/              # Skill system patterns
+|   |-- ai/                 # Beehave/AI patterns
+|   |-- flowkit/            # FlowKit event system
 |   \-- guides/             # Thinking patterns
 \-- scripts/                # Automation tools
 ```
 
 ### Understanding spec/ subdirectories
 
-**frontend/** - Single-layer frontend knowledge:
-- Component patterns (how to write components in THIS project)
-- State management rules (Redux? Zustand? Context?)
-- Styling conventions (CSS modules? Tailwind? Styled-components?)
-- Hook patterns (custom hooks, data fetching)
+**entity/** - Entity development knowledge:
+- Role class usage (FCharacter, FMonster)
+- Behavior configuration (health, faction, collision)
+- FlowKit entity patterns
+- Collision layer conventions
 
-**backend/** - Single-layer backend knowledge:
-- API design patterns (REST? GraphQL? tRPC?)
-- Database conventions (query patterns, migrations)
-- Error handling standards
-- Logging and monitoring rules
+**scene/** - Scene development knowledge:
+- Level design patterns
+- Entity composition
+- System-level FlowKit events
+- UI scene conventions
 
-**guides/** - Cross-layer thinking guides:
+**skill/** - Skill system knowledge:
+- SkillData resource structure
+- Attack/buff skill patterns
+- Bullet motion components
+- Skill event configuration
+
+**ai/** - AI behavior tree knowledge:
+- Beehave patterns
+- Monster/player/pet AI
+- Condition and action reference
+- Blackboard conventions
+
+**flowkit/** - FlowKit event system:
+- Event/condition/action reference
+- Behavior dependencies
+- API usage guidelines
+- Capability matrix
+
+**guides/** - Cross-system thinking guides:
 - Code reuse thinking guide
-- Cross-layer thinking guide
-- Pre-implementation checklists
+- Cross-system thinking guide
+- FlowKit thinking guide
+- Component composition guide
 
 ---
 
@@ -126,18 +148,18 @@ AI needs the same onboarding - but compressed into seconds at session start.
 
 ---
 
-### /trellis:before-frontend-dev and /trellis:before-backend-dev - Inject Specialized Knowledge
+### /trellis:before-entity-dev, /trellis:before-scene-dev, etc. - Inject Specialized Knowledge
 
 **WHY IT EXISTS**:
 AI models have "pre-trained knowledge" - general patterns from millions of codebases. But YOUR project has specific conventions that differ from generic patterns.
 
 **WHAT IT ACTUALLY DOES**:
-1. Reads `.trellis/spec/frontend/` or `.trellis/spec/backend/`
+1. Reads `.trellis/spec/entity/`, `scene/`, `skill/`, `ai/`, or `flowkit/`
 2. Loads project-specific patterns into AI's working context:
-   - Component naming conventions
-   - State management patterns
-   - Database query patterns
-   - Error handling standards
+   - Entity behavior conventions
+   - Collision layer assignments
+   - FlowKit event patterns
+   - AI tree structures
 
 **WHY THIS MATTERS**:
 - Without before-*-dev: AI writes generic code that doesn't match project style.
@@ -145,50 +167,32 @@ AI models have "pre-trained knowledge" - general patterns from millions of codeb
 
 ---
 
-### /trellis:check-frontend and /trellis:check-backend - Combat Context Drift
+### /trellis:check-entity, /trellis:check-scene, /trellis:check-cross-system - Combat Context Drift
 
 **WHY IT EXISTS**:
 AI context window has limited capacity. As conversation progresses, guidelines injected at session start become less influential. This causes "context drift."
 
 **WHAT IT ACTUALLY DOES**:
 1. Re-reads the guidelines that were injected earlier
-2. Compares written code against those guidelines
-3. Runs type checker and linter
+2. Compares created content against those guidelines
+3. Verifies behaviors, FlowKit events, AI trees
 4. Identifies violations and suggests fixes
 
 **WHY THIS MATTERS**:
-- Without check-*: Context drift goes unnoticed, code quality degrades.
+- Without check-*: Context drift goes unnoticed, quality degrades.
 - With check-*: Drift is caught and corrected before commit.
-
----
-
-### /trellis:check-cross-layer - Multi-Dimension Verification
-
-**WHY IT EXISTS**:
-Most bugs don't come from lack of technical skill - they come from "didn't think of it":
-- Changed a constant in one place, missed 5 other places
-- Modified database schema, forgot to update the API layer
-- Created a utility function, but similar one already exists
-
-**WHAT IT ACTUALLY DOES**:
-1. Identifies which dimensions your change involves
-2. For each dimension, runs targeted checks:
-   - Cross-layer data flow
-   - Code reuse analysis
-   - Import path validation
-   - Consistency checks
 
 ---
 
 ### /trellis:finish-work - Holistic Pre-Commit Review
 
 **WHY IT EXISTS**:
-The `/check-*` commands focus on code quality within a single layer. But real changes often have cross-cutting concerns.
+The `/check-*` commands focus on quality within a single system. But real changes often have cross-cutting concerns.
 
 **WHAT IT ACTUALLY DOES**:
 1. Reviews all changes holistically
-2. Checks cross-layer consistency
-3. Identifies broader impacts
+2. Checks cross-system consistency
+3. Verifies entity-scene-skill-ai integration
 4. Checks if new patterns should be documented
 
 ---
@@ -207,49 +211,56 @@ All the context AI built during this session will be lost when session ends. The
 
 ## REAL-WORLD WORKFLOW EXAMPLES
 
-### Example 1: Bug Fix Session
+### Example 1: Create Monster Entity
 
-**[1/8] /trellis:start** - AI needs project context before touching code
-**[2/8] ./.trellis/scripts/task.sh create "Fix bug" --slug fix-bug** - Track work for future reference
-**[3/8] /trellis:before-frontend-dev** - Inject project-specific frontend knowledge
-**[4/8] Investigate and fix the bug** - Actual development work
-**[5/8] /trellis:check-frontend** - Re-verify code against guidelines
-**[6/8] /trellis:finish-work** - Holistic cross-layer review
-**[7/8] Human tests and commits** - Human validates before code enters repo
-**[8/8] /trellis:record-session** - Persist memory for future sessions
+**[1/8] /trellis:start** - AI needs project context before creating anything
+**[2/8] ./.trellis/scripts/task.sh create "Create Slime Monster" --slug slime-monster** - Track work
+**[3/8] /trellis:before-entity-dev** - Inject entity creation knowledge
+**[4/8] Create entity with behaviors and FlowKit events** - Actual development
+**[5/8] /trellis:check-entity** - Verify entity follows guidelines
+**[6/8] /trellis:finish-work** - Holistic review
+**[7/8] Human tests in Godot and commits** - Human validates
+**[8/8] /trellis:record-session** - Persist memory
 
-### Example 2: Planning Session (No Code)
+### Example 2: Create Battle Scene
 
-**[1/4] /trellis:start** - Context needed even for non-coding work
-**[2/4] ./.trellis/scripts/task.sh create "Planning task" --slug planning-task** - Planning is valuable work
-**[3/4] Review docs, create subtask list** - Actual planning work
-**[4/4] /trellis:record-session (with --summary)** - Planning decisions must be recorded
+**[1/8] /trellis:start** - Context needed
+**[2/8] ./.trellis/scripts/task.sh create "Battle Arena Scene" --slug battle-arena** - Track work
+**[3/8] /trellis:before-scene-dev** - Inject scene creation knowledge
+**[4/8] Create scene with entity instances and System events** - Development
+**[5/8] /trellis:check-scene** - Verify scene structure
+**[6/8] /trellis:check-cross-system** - Verify entity-scene integration
+**[7/8] Human tests and commits**
+**[8/8] /trellis:record-session**
 
-### Example 3: Code Review Fixes
+### Example 3: Add Monster AI
 
-**[1/6] /trellis:start** - Resume context from previous session
-**[2/6] /trellis:before-backend-dev** - Re-inject guidelines before fixes
-**[3/6] Fix each CR issue** - Address feedback with guidelines in context
-**[4/6] /trellis:check-backend** - Verify fixes didn't introduce new issues
-**[5/6] /trellis:finish-work** - Document lessons from CR
-**[6/6] Human commits, then /trellis:record-session** - Preserve CR lessons
+**[1/7] /trellis:start**
+**[2/7] /trellis:before-behavior-tree-dev** - Inject AI patterns
+**[3/7] Create behavior tree with conditions/actions** - Development
+**[4/7] Attach to entity via behavior_tree behavior**
+**[5/7] /trellis:check-cross-system** - Verify AI-entity integration
+**[6/7] Human tests and commits**
+**[7/7] /trellis:record-session**
 
-### Example 4: Large Refactoring
+### Example 4: Add Death Logic with FlowKit
 
-**[1/5] /trellis:start** - Clear baseline before major changes
-**[2/5] Plan phases** - Break into verifiable chunks
-**[3/5] Execute phase by phase with /check-* after each** - Incremental verification
-**[4/5] /trellis:finish-work** - Check if new patterns should be documented
-**[5/5] Record with multiple commit hashes** - Link all commits to one feature
+**[1/6] /trellis:start**
+**[2/6] /trellis:before-entity-dev** - Need FlowKit event knowledge
+**[3/6] Add health behavior if missing, create death event block**
+**[4/6] /trellis:check-entity** - Verify event configuration
+**[5/6] Human tests and commits**
+**[6/6] /trellis:record-session**
 
-### Example 5: Debug Session
+### Example 5: Create New Skill
 
-**[1/6] /trellis:start** - See if this bug was investigated before
-**[2/6] /trellis:before-backend-dev** - Guidelines might document known gotchas
-**[3/6] Investigation** - Actual debugging work
-**[4/6] /trellis:check-backend** - Verify debug changes don't break other things
-**[5/6] /trellis:finish-work** - Debug findings might need documentation
-**[6/6] Human commits, then /trellis:record-session** - Debug knowledge is valuable
+**[1/7] /trellis:start**
+**[2/7] /trellis:before-skill-dev** - Inject skill system knowledge
+**[3/7] Create SkillData resource with events** - Development
+**[4/7] Attach to entity via skill_box behavior**
+**[5/7] /trellis:check-cross-system** - Verify skill-entity integration
+**[6/7] Human tests and commits**
+**[7/7] /trellis:record-session**
 
 ---
 
@@ -272,72 +283,34 @@ Check if `.trellis/spec/` contains empty templates or customized guidelines:
 
 ```bash
 # Check if files are still empty templates (look for placeholder text)
-grep -l "To be filled by the team" .trellis/spec/backend/*.md 2>/dev/null | wc -l
-grep -l "To be filled by the team" .trellis/spec/frontend/*.md 2>/dev/null | wc -l
+grep -l "To be filled by the team" .trellis/spec/entity/*.md 2>/dev/null | wc -l
+grep -l "To be filled by the team" .trellis/spec/scene/*.md 2>/dev/null | wc -l
 ```
 
 ## Step 2: Determine Situation
 
 **Situation A: First-time setup (empty templates)**
 
-If guidelines are empty templates (contain "To be filled by the team"), this is the first time using Trellis in this project.
+If guidelines are empty templates, explain:
 
-Explain to the developer:
+"The development guidelines in `.trellis/spec/` need to be customized for YOUR Godot project.
 
-"I see that the development guidelines in `.trellis/spec/` are still empty templates. This is normal for a new Trellis setup!
+**Your first task should be to verify these guidelines match your project:**
 
-The templates contain placeholder text that needs to be replaced with YOUR project's actual conventions. Without this, `/before-*-dev` commands won't provide useful guidance.
+1. Check existing entity patterns in your project
+2. Verify collision layer assignments
+3. Document your FlowKit event patterns
+4. Record your AI behavior tree conventions
 
-**Your first task should be to fill in these guidelines:**
-
-1. Look at your existing codebase
-2. Identify the patterns and conventions already in use
-3. Document them in the guideline files
-
-For example, for `.trellis/spec/backend/database-guidelines.md`:
-- What ORM/query library does your project use?
-- How are migrations managed?
-- What naming conventions for tables/columns?
-
-Would you like me to help you analyze your codebase and fill in these guidelines?"
+Would you like me to help analyze your codebase and update these guidelines?"
 
 **Situation B: Guidelines already customized**
 
-If guidelines have real content (no "To be filled" placeholders), this is an existing setup.
-
-Explain to the developer:
+If guidelines have real content, explain:
 
 "Great! Your team has already customized the development guidelines. You can start using `/before-*-dev` commands right away.
 
 I recommend reading through `.trellis/spec/` to familiarize yourself with the team's coding standards."
-
-## Step 3: Help Fill Guidelines (If Empty)
-
-If the developer wants help filling guidelines, create a feature to track this:
-
-```bash
-./.trellis/scripts/task.sh create "Fill spec guidelines" --slug fill-spec-guidelines
-```
-
-Then systematically analyze the codebase and fill each guideline file:
-
-1. **Analyze the codebase** - Look at existing code patterns
-2. **Document conventions** - Write what you observe, not ideals
-3. **Include examples** - Reference actual files in the project
-4. **List forbidden patterns** - Document anti-patterns the team avoids
-
-Work through one file at a time:
-- `backend/directory-structure.md`
-- `backend/database-guidelines.md`
-- `backend/error-handling.md`
-- `backend/quality-guidelines.md`
-- `backend/logging-guidelines.md`
-- `frontend/directory-structure.md`
-- `frontend/component-guidelines.md`
-- `frontend/hook-guidelines.md`
-- `frontend/state-management.md`
-- `frontend/quality-guidelines.md`
-- `frontend/type-safety.md`
 
 ---
 
@@ -348,11 +321,11 @@ After covering all three parts, summarize:
 "You're now onboarded to the Trellis workflow system! Here's what we covered:
 - Part 1: Core concepts (why this workflow exists)
 - Part 2: Real-world examples (how to apply the workflow)
-- Part 3: Guidelines status (empty templates need filling / already customized)
+- Part 3: Guidelines status (needs customization / ready to use)
 
 **Next steps** (tell user):
 1. Run `/trellis:record-session` to record this onboard session
-2. [If guidelines empty] Start filling in `.trellis/spec/` guidelines
+2. [If guidelines need work] Review and update `.trellis/spec/` guidelines
 3. [If guidelines ready] Start your first development task
 
 What would you like to do first?"

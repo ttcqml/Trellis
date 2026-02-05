@@ -83,53 +83,86 @@ get_implement_base() {
 EOF
 }
 
-get_implement_backend() {
+get_implement_entity() {
   cat << EOF
-{"file": "$DIR_WORKFLOW/$DIR_SPEC/backend/index.md", "reason": "Backend development guide"}
-{"file": "$DIR_WORKFLOW/$DIR_SPEC/backend/api-module.md", "reason": "API module conventions"}
-{"file": "$DIR_WORKFLOW/$DIR_SPEC/backend/quality.md", "reason": "Code quality requirements"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/entity/index.md", "reason": "Entity development guide"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/entity/role-guidelines.md", "reason": "Role class conventions"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/entity/behavior-guidelines.md", "reason": "Behavior configuration"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/entity/collision-guidelines.md", "reason": "Collision layer conventions"}
 EOF
 }
 
-get_implement_frontend() {
+get_implement_scene() {
   cat << EOF
-{"file": "$DIR_WORKFLOW/$DIR_SPEC/frontend/index.md", "reason": "Frontend development guide"}
-{"file": "$DIR_WORKFLOW/$DIR_SPEC/frontend/components.md", "reason": "Component conventions"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/scene/index.md", "reason": "Scene development guide"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/scene/entity-composition.md", "reason": "Entity composition patterns"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/scene/flowkit-scene-patterns.md", "reason": "System FlowKit events"}
+EOF
+}
+
+get_implement_skill() {
+  cat << EOF
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/skill/index.md", "reason": "Skill system guide"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/skill/skill-data-guidelines.md", "reason": "SkillData resource structure"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/skill/skill-event-guidelines.md", "reason": "Skill event configuration"}
+EOF
+}
+
+get_implement_ai() {
+  cat << EOF
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/ai/index.md", "reason": "AI behavior tree guide"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/ai/beehave-guidelines.md", "reason": "Beehave patterns"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/ai/condition-action-reference.md", "reason": "Condition/action reference"}
 EOF
 }
 
 get_check_context() {
   local dev_type="$1"
   local finish_work=$(get_command_path "finish-work")
-  local check_backend=$(get_command_path "check-backend")
-  local check_frontend=$(get_command_path "check-frontend")
+  local check_entity=$(get_command_path "check-entity")
+  local check_scene=$(get_command_path "check-scene")
+  local check_cross=$(get_command_path "check-cross-system")
 
   cat << EOF
 {"file": "${finish_work}", "reason": "Finish work checklist"}
-{"file": "$DIR_WORKFLOW/$DIR_SPEC/shared/index.md", "reason": "Shared coding standards"}
+{"file": "$DIR_WORKFLOW/$DIR_SPEC/flowkit/index.md", "reason": "FlowKit event system"}
 EOF
 
-  if [[ "$dev_type" == "backend" ]] || [[ "$dev_type" == "fullstack" ]]; then
-    echo "{\"file\": \"${check_backend}\", \"reason\": \"Backend check spec\"}"
-  fi
-  if [[ "$dev_type" == "frontend" ]] || [[ "$dev_type" == "fullstack" ]]; then
-    echo "{\"file\": \"${check_frontend}\", \"reason\": \"Frontend check spec\"}"
-  fi
+  case "$dev_type" in
+    entity)
+      echo "{\"file\": \"${check_entity}\", \"reason\": \"Entity check spec\"}"
+      ;;
+    scene)
+      echo "{\"file\": \"${check_scene}\", \"reason\": \"Scene check spec\"}"
+      echo "{\"file\": \"${check_cross}\", \"reason\": \"Cross-system check spec\"}"
+      ;;
+    skill|ai)
+      echo "{\"file\": \"${check_entity}\", \"reason\": \"Entity check spec\"}"
+      echo "{\"file\": \"${check_cross}\", \"reason\": \"Cross-system check spec\"}"
+      ;;
+  esac
 }
 
 get_debug_context() {
   local dev_type="$1"
-  local check_backend=$(get_command_path "check-backend")
-  local check_frontend=$(get_command_path "check-frontend")
+  local check_entity=$(get_command_path "check-entity")
+  local check_scene=$(get_command_path "check-scene")
+  local check_cross=$(get_command_path "check-cross-system")
 
-  echo "{\"file\": \"$DIR_WORKFLOW/$DIR_SPEC/shared/index.md\", \"reason\": \"Shared coding standards\"}"
+  echo "{\"file\": \"$DIR_WORKFLOW/$DIR_SPEC/flowkit/index.md\", \"reason\": \"FlowKit event system\"}"
 
-  if [[ "$dev_type" == "backend" ]] || [[ "$dev_type" == "fullstack" ]]; then
-    echo "{\"file\": \"${check_backend}\", \"reason\": \"Backend check spec\"}"
-  fi
-  if [[ "$dev_type" == "frontend" ]] || [[ "$dev_type" == "fullstack" ]]; then
-    echo "{\"file\": \"${check_frontend}\", \"reason\": \"Frontend check spec\"}"
-  fi
+  case "$dev_type" in
+    entity)
+      echo "{\"file\": \"${check_entity}\", \"reason\": \"Entity check spec\"}"
+      ;;
+    scene)
+      echo "{\"file\": \"${check_scene}\", \"reason\": \"Scene check spec\"}"
+      ;;
+    skill|ai)
+      echo "{\"file\": \"${check_entity}\", \"reason\": \"Entity check spec\"}"
+      echo "{\"file\": \"${check_cross}\", \"reason\": \"Cross-system check spec\"}"
+      ;;
+  esac
 }
 
 # =============================================================================
@@ -322,7 +355,7 @@ cmd_init_context() {
   if [[ -z "$target_dir" ]] || [[ -z "$dev_type" ]]; then
     echo -e "${RED}Error: Missing arguments${NC}"
     echo "Usage: $0 init-context <task-dir> <dev_type> [--platform claude|cursor]"
-    echo "  dev_type: backend | frontend | fullstack | test | docs"
+    echo "  dev_type: entity | scene | skill | ai"
     echo "  --platform: claude (default) | cursor"
     exit 1
   fi
@@ -348,12 +381,10 @@ cmd_init_context() {
   {
     get_implement_base
     case "$dev_type" in
-      backend|test) get_implement_backend ;;
-      frontend) get_implement_frontend ;;
-      fullstack)
-        get_implement_backend
-        get_implement_frontend
-        ;;
+      entity) get_implement_entity ;;
+      scene) get_implement_scene ;;
+      skill) get_implement_skill ;;
+      ai) get_implement_ai ;;
     esac
   } > "$implement_file"
   echo -e "  ${GREEN}✓${NC} $(wc -l < "$implement_file" | tr -d ' ') entries"
@@ -1119,7 +1150,7 @@ Usage:
   $0 list-archive [YYYY-MM]             List archived tasks
 
 Arguments:
-  dev_type: backend | frontend | fullstack | test | docs
+  dev_type: entity | scene | skill | ai
 
 List options:
   --mine, -m           Show only tasks assigned to current developer
@@ -1127,10 +1158,10 @@ List options:
 
 Examples:
   $0 create "Add login feature" --slug add-login
-  $0 init-context .trellis/tasks/01-21-add-login backend
-  $0 init-context .trellis/tasks/01-21-add-login frontend --platform cursor
-  $0 add-context <dir> implement .trellis/spec/backend/auth.md "Auth guidelines"
-  $0 set-branch <dir> task/add-login
+  $0 init-context .trellis/tasks/01-21-slime-monster entity
+  $0 init-context .trellis/tasks/01-21-battle-arena scene --platform cursor
+  $0 add-context <dir> implement .trellis/spec/entity/behavior-guidelines.md "Behavior guidelines"
+  $0 set-branch <dir> task/slime-monster
   $0 start .trellis/tasks/01-21-add-login
   $0 create-pr                          # Uses current task
   $0 create-pr <dir> --dry-run          # Preview without changes

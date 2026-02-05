@@ -154,7 +154,7 @@ def get_completion_markers(repo_root: str, task_dir: str) -> list[str]:
     Read check.jsonl and generate completion markers from reasons.
 
     Each entry's "reason" field becomes {REASON}_FINISH marker.
-    Example: {"file": "...", "reason": "TypeCheck"} -> "TYPECHECK_FINISH"
+    Example: {"file": "...", "reason": "EntityCheck"} -> "ENTITYCHECK_FINISH"
     """
     check_jsonl_path = os.path.join(repo_root, task_dir, "check.jsonl")
     markers = []
@@ -355,14 +355,15 @@ def main():
                 "reason": f"""Iteration {current_iteration}/{MAX_ITERATIONS}. Missing completion markers: {", ".join(missing)}.
 
 IMPORTANT: You must ACTUALLY run the checks, not just output the markers.
-- Did you run lint? What was the output?
-- Did you run typecheck? What was the output?
-- Did they actually pass with zero errors?
+- Did you verify entity behaviors are correct?
+- Did you check scene structure and node paths?
+- Did you validate FlowKit events and conditions?
+- Did all checks actually pass?
 
-Only output a marker (e.g., LINT_FINISH) AFTER:
-1. You have executed the corresponding command
-2. The command completed with zero errors
-3. You have shown the command output in your response
+Only output a marker (e.g., ENTITYCHECK_FINISH) AFTER:
+1. You have verified the corresponding system
+2. All issues found have been fixed
+3. You have confirmed the verification in your response
 
 Do NOT output markers just to escape the loop. The loop exists to ensure quality.""",
             }

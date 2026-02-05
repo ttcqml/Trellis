@@ -8,82 +8,93 @@ Before submitting or committing, use this checklist to ensure work completeness.
 
 ## Checklist
 
-### 1. Code Quality
+### 1. Scene Validation
 
 ```bash
-# Must pass
-pnpm lint
-pnpm type-check
-pnpm test
+# Verify scene files are valid
+# Check for any parse errors in .tscn files
+git diff --name-only | grep "\.tscn$"
 ```
 
-- [ ] `pnpm lint` passes with 0 errors?
-- [ ] `pnpm type-check` passes with no type errors?
-- [ ] Tests pass?
-- [ ] No `console.log` statements (use logger)?
-- [ ] No non-null assertions (the `x!` operator)?
-- [ ] No `any` types?
+- [ ] All .tscn files parse correctly?
+- [ ] No missing resource references?
+- [ ] No broken node paths?
 
-### 2. Documentation Sync
+### 2. Entity Completeness
+
+For each entity created/modified:
+
+- [ ] Required behaviors are added?
+  - health, faction for combatants
+  - collision behavior for physics
+  - animated_sprite2d for visuals
+- [ ] Collision layers are correct?
+- [ ] FlowKit events are configured (if needed)?
+
+### 3. FlowKit Events
+
+For each FlowKit event block:
+
+- [ ] Event target matches capability (Entity vs System)?
+- [ ] Required behaviors exist for the event?
+- [ ] Conditions use correct parameters?
+- [ ] Actions are in correct order?
+
+### 4. Behavior Tree Validation
+
+For each behavior tree:
+
+- [ ] All condition scripts exist?
+- [ ] All action scripts exist?
+- [ ] Blackboard keys are consistent?
+- [ ] Tree structure follows patterns (die > attack > move)?
+
+### 5. Documentation Sync
 
 **Structure Docs**:
-- [ ] Does `.trellis/spec/backend/` need updates?
-  - New patterns, new modules, new conventions
-- [ ] Does `.trellis/spec/frontend/` need updates?
-  - New components, new hooks, new patterns
+- [ ] Does `.trellis/spec/entity/` need updates?
+  - New entity patterns, new behaviors
+- [ ] Does `.trellis/spec/scene/` need updates?
+  - New scene types, new composition patterns
+- [ ] Does `.trellis/spec/skill/` need updates?
+  - New skill types, new events
+- [ ] Does `.trellis/spec/ai/` need updates?
+  - New AI patterns, new conditions/actions
 - [ ] Does `.trellis/spec/guides/` need updates?
-  - New cross-layer flows, lessons from bugs
+  - New cross-system flows, lessons from bugs
 
-**Key Question**: 
+**Key Question**:
 > "If I fixed a bug or discovered something non-obvious, should I document it so future me (or others) won't hit the same issue?"
 
 If YES -> Update the relevant spec doc.
 
-### 3. API Changes
+### 6. Cross-System Verification
 
-If you modified API endpoints:
+If the change spans multiple systems:
 
-- [ ] Input schema updated?
-- [ ] Output schema updated?
-- [ ] API documentation updated?
-- [ ] Client code updated to match?
+- [ ] Entity behaviors match FlowKit event requirements?
+- [ ] Beehave conditions/actions match entity structure?
+- [ ] Skill data matches entity skill_box configuration?
+- [ ] Scene entity instances are properly configured?
 
-### 4. Database Changes
+### 7. Manual Testing
 
-If you modified database schema:
-
-- [ ] Migration file created?
-- [ ] Schema file updated?
-- [ ] Related queries updated?
-- [ ] Seed data updated (if applicable)?
-
-### 5. Cross-Layer Verification
-
-If the change spans multiple layers:
-
-- [ ] Data flows correctly through all layers?
-- [ ] Error handling works at each boundary?
-- [ ] Types are consistent across layers?
-- [ ] Loading states handled?
-
-### 6. Manual Testing
-
-- [ ] Feature works in browser/app?
-- [ ] Edge cases tested?
-- [ ] Error states tested?
-- [ ] Works after page refresh?
+- [ ] Scene runs in Godot editor?
+- [ ] Entities behave as expected?
+- [ ] FlowKit events trigger correctly?
+- [ ] AI behaviors work properly?
 
 ---
 
 ## Quick Check Flow
 
 ```bash
-# 1. Code checks
-pnpm lint && pnpm type-check
-
-# 2. View changes
+# 1. View changes
 git status
 git diff --name-only
+
+# 2. Check scene files
+git diff --name-only | grep "\.tscn$"
 
 # 3. Based on changed files, check relevant items above
 ```
@@ -95,10 +106,10 @@ git diff --name-only
 | Oversight | Consequence | Check |
 |-----------|-------------|-------|
 | Structure docs not updated | Others don't know the change | Check .trellis/spec/ |
-| Migration not created | Schema out of sync | Check db/migrations/ |
-| Types not synced | Runtime errors | Check shared types |
-| Tests not updated | False confidence | Run full test suite |
-| Console.log left in | Noisy production logs | Search for console.log |
+| Missing behavior | FlowKit events don't trigger | Check entity behaviors |
+| Wrong collision layer | Entities don't interact | Check collision config |
+| Blackboard key mismatch | AI doesn't work | Check condition/action pairs |
+| Wrong event target | Events never fire | Check Entity vs System |
 
 ---
 
@@ -106,10 +117,10 @@ git diff --name-only
 
 ```
 Development Flow:
-  Write code -> Test -> /trellis:finish-work -> git commit -> /trellis:record-session
-                          |                              |
-                   Ensure completeness              Record progress
-                   
+  Write code -> Test in Godot -> /trellis:finish-work -> git commit -> /trellis:record-session
+                                      |                              |
+                               Ensure completeness              Record progress
+
 Debug Flow:
   Hit bug -> Fix -> /trellis:break-loop -> Knowledge capture
                        |
@@ -126,4 +137,4 @@ Debug Flow:
 
 > **Delivery includes not just code, but also documentation, verification, and knowledge capture.**
 
-Complete work = Code + Docs + Tests + Verification
+Complete work = Scenes + Behaviors + Events + Tests + Docs

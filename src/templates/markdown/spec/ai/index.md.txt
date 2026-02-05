@@ -1,0 +1,56 @@
+# AI Behavior Tree Guidelines
+
+> Best practices for AI development using Beehave behavior trees.
+
+---
+
+## Overview
+
+This directory contains guidelines for developing AI behavior using the Beehave behavior tree system. Behavior trees define entity decision-making for players, enemies, pets, and NPCs.
+
+---
+
+## Guidelines Index
+
+| Guide | Description | Status |
+|-------|-------------|--------|
+| [Beehave Guidelines](./beehave-guidelines.md) | Beehave framework usage | To be filled |
+| [Monster AI Patterns](./monster-ai-patterns.md) | Enemy AI patterns | To be filled |
+| [Player Behavior Patterns](./player-behavior-patterns.md) | Player control patterns | To be filled |
+| [Pet AI Patterns](./pet-ai-patterns.md) | Pet/companion AI | To be filled |
+| [Condition Action Reference](./condition-action-reference.md) | Custom nodes reference | To be filled |
+
+---
+
+## Behavior Tree Architecture
+
+```
+BeehaveTree (root)
+└── SelectorReactiveComposite
+    ├── Sequence: die (death handling)
+    ├── Sequence: attack (combat)
+    └── Sequence: move (movement)
+```
+
+---
+
+## Core Concepts
+
+### Node Return Values
+
+| Value | Meaning | Selector Behavior | Sequence Behavior |
+|-------|---------|-------------------|-------------------|
+| SUCCESS | Completed | Stop, return SUCCESS | Continue next |
+| FAILURE | Failed | Try next child | Stop, return FAILURE |
+| RUNNING | In progress | Stop, return RUNNING | Stop, return RUNNING |
+
+---
+
+## How to Fill These Guidelines
+
+For each guideline file:
+
+1. Document your project's **AI patterns**
+2. Include **behavior tree examples**
+3. List **condition/action patterns**
+4. Add **common AI bugs** your team has encountered
