@@ -12,7 +12,7 @@
  *   └── settings.json   # Settings configuration
  */
 
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -119,4 +119,73 @@ export function getSettingsTemplate(): HookTemplate {
     targetPath: "settings.json",
     content: settingsTemplate,
   };
+}
+
+/**
+ * Skill template with skill name, relative path and content
+ */
+export interface SkillTemplate {
+  skillName: string; // e.g. "godot-game-builder"
+  relativePath: string; // e.g. "godot-game-builder/SKILL.md"
+  content: string;
+}
+
+/**
+ * Recursively collect all files under a directory, returning paths relative to baseDir
+ */
+function collectFilesRecursive(
+  dir: string,
+  baseDir: string,
+): { relativePath: string; fullPath: string }[] {
+  const results: { relativePath: string; fullPath: string }[] = [];
+  try {
+    const entries = readdirSync(dir);
+    for (const entry of entries) {
+      const fullPath = join(dir, entry);
+      const stat = statSync(fullPath);
+      if (stat.isDirectory()) {
+        results.push(...collectFilesRecursive(fullPath, baseDir));
+      } else {
+        const relativePath = fullPath
+          .slice(baseDir.length + 1)
+          .replace(/\\/g, "/");
+        results.push({ relativePath, fullPath });
+      }
+    }
+  } catch {
+    // Directory doesn't exist
+  }
+  return results;
+}
+
+/**
+ * Get all skill templates
+ * Skills are stored in skills/ subdirectory, each skill in its own folder
+ */
+export function getAllSkills(): SkillTemplate[] {
+  const skills: SkillTemplate[] = [];
+  const skillsDir = join(__dirname, "skills");
+
+  try {
+    const skillDirs = readdirSync(skillsDir);
+    for (const skillName of skillDirs) {
+      const skillDir = join(skillsDir, skillName);
+      const stat = statSync(skillDir);
+      if (!stat.isDirectory()) continue;
+
+      const files = collectFilesRecursive(skillDir, skillsDir);
+      for (const file of files) {
+        const content = readFileSync(file.fullPath, "utf-8");
+        skills.push({
+          skillName,
+          relativePath: file.relativePath,
+          content,
+        });
+      }
+    }
+  } catch {
+    // skills directory doesn't exist
+  }
+
+  return skills;
 }

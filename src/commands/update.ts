@@ -70,6 +70,7 @@ import { getCommandTemplates } from "../configurators/templates.js";
 import {
   getAllAgents,
   getAllHooks,
+  getAllSkills,
   getSettingsTemplate,
 } from "../templates/claude/index.js";
 
@@ -193,6 +194,12 @@ function collectTemplateFiles(_cwd: string): Map<string, string> {
   const agents = getAllAgents();
   for (const agent of agents) {
     files.set(`.claude/agents/${agent.name}.md`, agent.content);
+  }
+
+  // Claude skills
+  const skills = getAllSkills();
+  for (const skill of skills) {
+    files.set(`.claude/skills/${skill.relativePath}`, skill.content);
   }
 
   // Claude hooks
