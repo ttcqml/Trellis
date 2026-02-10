@@ -41,8 +41,17 @@ description: 创建游戏场景，组装多个实体（玩家、敌人、道具�
 
 **可直接使用预制模板的情况**（无需创建角色）：
 - 普通玩家角色：直接使用 `res://Game_flowkit/Entity/Player/FCharacterTest.tscn`
-- 普通敌人/怪物：直接使用 `res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn`
+- 普通敌人/怪物：
+  - `res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn`（基础怪物）
+  - `res://Game_flowkit/Entity/Enemy/FMonsterTest2.tscn`（变种2）
+  - `res://Game_flowkit/Entity/Enemy/FMonsterTest3.tscn`（变种3）
+  - `res://Game_flowkit/Entity/Enemy/FMonsterTest4.tscn`（变种4）
 - 通用角色：直接使用 `res://Game_flowkit/Entity/Role/FRole.tscn`
+- 门：`res://Game_flowkit/Entity/Items/Door.tscn`（内置清怪开门逻辑）
+- 出生点：`res://Game_flowkit/Entity/Items/BornPoint.tscn`
+- 地图：`res://Game_flowkit/Entity/Map/Map1.tscn` 或 `Map2.tscn`
+- UI容器：`res://Game_flowkit/EntityTemplate/CanvasLayer.tscn`
+- 文本标签：`res://Game_flowkit/EntityTemplate/Label.tscn`（放在CanvasLayer下）
 - 用户没有提到任何特殊特征
 
 ### 工作要求
@@ -141,8 +150,10 @@ async with websockets.connect("ws://127.0.0.1:18888") as ws:
 **1. 确定要实例化的角色场景路径**
    - 用户提到的自定义角色: `res://RequirementImp/[Type]/[Name].tscn`
    - 预制玩家模板: `res://Game_flowkit/Entity/Player/FCharacterTest.tscn`
-   - 预制敌人模板: `res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn`
+   - 预制敌人模板: `res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn`（及 FMonsterTest2/3/4）
    - 预制通用模板: `res://Game_flowkit/Entity/Role/FRole.tscn`
+   - UI容器: `res://Game_flowkit/EntityTemplate/CanvasLayer.tscn`
+   - 文本标签: `res://Game_flowkit/EntityTemplate/Label.tscn`（parent 设为 CanvasLayer）
 
 **2. tool: `InstantiateScene`** - 实例化角色到场景
    - args: `{"scene_path": "[要实例化的角色场景路径]", "parent_path": "root"}`

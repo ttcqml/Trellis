@@ -29,6 +29,7 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 | 当前节点自身 | `new NodePath(".")` | `"."` | 事件表所属节点自身（Entity/FCharacter/CharacterBody2D） |
 | 场景中其他节点 | `new NodePath("节点名")` | `"FMonsterTest"`, `"Door"` | 场景根节点下的同级节点。用于 `set_node_enabled`、`teleport_to_node`、`instantiate_entity_random_position` 等需要操作场景中其他实体的动作 |
 | 当前节点的子节点 | `new NodePath("子节点名")` | `"Role_flowkit"` | 当前节点的直接子节点 |
+| 嵌套子节点路径 | `new NodePath("父节点/子节点")` | `"CanvasLayer/Label"` | 场景中的嵌套节点路径，用于 UI 等多层结构 |
 
 **target_node 使用示例**:
 - `"."` → 操作事件表所属节点自身（如自身位置、变量、删除等）
@@ -36,6 +37,7 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 - `"Door"` → 操作场景根节点下名为 Door 的节点（如开门/关门）
 - `"FCharacterTest"` → 操作场景根节点下名为 FCharacterTest 的玩家节点（如传送）
 - `"System"` → 操作全局系统节点（如打印日志、加载场景、设置变量等）
+- `"CanvasLayer/Label"` → 操作嵌套节点（如设置标签文本、颜色等）
 
 ---
 
@@ -43,7 +45,7 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 **定义**: 全局系统级节点，处理游戏的系统级逻辑
 **目标节点**: `"System"` (固定路径)
 **适用场景**: 游戏全局逻辑、输入处理、UI管理、场景过渡
-**能力统计**: 17事件 / 17条件 / 43动作 / 0行为
+**能力统计**: 20事件 / 18条件 / 44动作 / 0行为
 
 #### 事件（17个）
 **基础生命周期**:
@@ -71,14 +73,24 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 - `on_pause_state_changed` - 暂停状态变化时
 - `on_time_scale_changed` - 时间缩放变化时
 
+**敌人数量事件**:
+- `on_enemy_count_zero` - 敌人数量从 >0 变为 0 时触发（关卡结束、开门）
+- `on_enemy_count_nonzero` - 敌人数量从 0 变为 >0 时触发（关卡开始、关门）
+- `on_enemy_count_changed` - 敌人数量变化时触发
+  - 参数: `{"最小变化量": 1}`
+
 **窗口事件**:
 - `on_window_focus_changed` - 窗口焦点变化
 - `on_window_focus_gained` - 窗口获得焦点
 - `on_window_focus_lost` - 窗口失去焦点
 
-#### 条件（17个）
+#### 条件（18个）
 **变量比较**:
 - `compare_variable` - 比较全局变量（==, !=, <, >, <=, >=）
+
+**敌人数量**:
+- `compare_enemy_count` - 比较场景中敌人数量
+  - 参数: `{"比较运算符": "<=", "数量": 0}`
 
 **输入检测**:
 - `is_action_released` - 检查动作是否释放
@@ -105,10 +117,14 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 - `is_window_focused` - 窗口是否有焦点
 - `is_window_fullscreen` - 窗口是否全屏
 
-#### 动作（43个）
+#### 动作（44个）
 **日志输出**:
 - `print` - 打印日志
 - `printerr` - 打印错误日志
+
+**信号**:
+- `emit_custom_signal` - 发送自定义信号（可被 `on_custom_signal` 监听）
+  - 参数: `{"信号名": "进入下一关", "信号数据": ""}`
 
 **场景管理**:
 - `load_scene` - 加载场景（实例化到当前场景）
@@ -164,7 +180,7 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 **定义**: 游戏中的实体对象基类，代表角色、道具、敌人等具体对象
 **目标节点**: `"."` (当前节点) 或 `"子节点名称"`
 **适用场景**: 玩家角色、敌人、NPC、可交互物品、子弹、道具
-**能力统计**: 8事件 / 3条件 / 8动作 / 11行为
+**能力统计**: 8事件 / 3条件 / 12动作 / 11行为
 
 #### 事件（8个）
 **基础生命周期**:
@@ -191,7 +207,7 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
 - `compare_faction` - 比较阵营 **[需 faction behavior]**
   - 参数: `{"比较运算符": "==", "阵营": "玩家|敌人|中立"}`
 
-#### 动作（12个）
+#### 动作（14个）
 **节点属性控制**:
 - `set_node_variable` - 设置节点变量
 - `set_position_x` / `set_position_y` - 设置X/Y轴坐标
@@ -219,6 +235,14 @@ description: 为场景或角色添加游戏逻辑（FlowKit事件表：事件-�
   - 参数: `{"Timer Name": "timer_name", "Value": 1.0}`
 - `bind_node_timer` - 绑定一个节点计时器事件
   - 参数: `{"Timer Name": "timer_name", "callable": callable}`
+
+**动画控制** [需要animated_sprite2d behavior]:
+- `change_animation` - 切换实体动画
+  - 参数: `{"动画名": "open_down"}`（动画名必须在 SpriteFrames 中存在）
+
+**碰撞控制** [需要characterbody2d_collision behavior]:
+- `set_collision_enabled` - 启用/禁用碰撞检测
+  - 参数: `{"启用": true}` 或 `{"启用": false}`
 
 **血量管理** [需要health behavior]:
 - `change_health` - 改变血量（正数加血，负数减血）
@@ -250,7 +274,31 @@ Entity节点可以添加以下behaviors来增强功能：
 
 ---
 
-### 3. FCharacter（玩家/友方角色类型）
+### 3. Label（标签类型）
+**定义**: UI文本标签节点，用于在场景中显示文本信息（如关卡数、分数、提示等）
+**目标节点**: 场景中 Label 节点的路径（如 `"CanvasLayer/Label"`）
+**适用场景**: 关卡显示、分数显示、提示文本、状态信息
+**能力统计**: 0事件 / 0条件 / 3动作 / 1行为
+
+#### 动作（3个）
+- `set_label_text` - 设置标签文本 **[需 label behavior]**
+  - 参数: `{"文本": "第1关"}` 或 `{"文本": "  \"第%d关\" % stageLevel"}`（支持表达式）
+  - target_node: Label 节点路径，如 `"CanvasLayer/Label"`
+- `set_label_color` - 设置标签颜色 **[需 label behavior]**
+  - 参数: `{"颜色": "Color(1, 0, 0, 1)"}`
+- `set_label_font_size` - 设置标签字体大小 **[需 label behavior]**
+  - 参数: `{"字体大小": 30}`
+
+#### Behavior（1个）
+| Behavior ID | 功能说明 | 关键参数 | 相关能力 |
+|------------|---------|---------|---------|
+| **label** | Label组件，管理文本、颜色、字体大小 | text, fontColor, fontSize, Anchors Preset, Position X/Y, ZIndex | `set_label_text`, `set_label_color`, `set_label_font_size` 动作 |
+
+**注意**: Label 节点通常放在 CanvasLayer 下以实现 UI 固定显示。target_node 使用路径格式如 `"CanvasLayer/Label"`。
+
+---
+
+### 5. FCharacter（玩家/友方角色类型）
 **定义**: 特殊的角色类型，继承自Entity，专门用于玩家或友方角色
 **目标节点**: `"."` (当前节点) 或子节点路径
 **适用场景**: 玩家角色、友方单位、需要特殊保护逻辑的角色
@@ -272,7 +320,7 @@ Entity节点可以添加以下behaviors来增强功能：
 
 ---
 
-### 4. CharacterBody2D（物理角色体类型）
+### 6. CharacterBody2D（物理角色体类型）
 **定义**: Godot物理系统的角色体类型，用于需要物理移动和碰撞的实体
 **目标节点**: `"."` (当前节点)
 **适用场景**: 需要物理移动的角色（玩家控制、AI敌人）、需要与地形和其他物体发生物理碰撞的实体

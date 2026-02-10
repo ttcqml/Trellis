@@ -41,6 +41,9 @@
 | On Window Focus Gained | `on_window_focus_gained` | System | 窗口获得焦点时触发 | 无 | `new NodePath("System")` | `res://addons/flowkit/events/System/on_window_focus_gained.gd` |
 | On Window Focus Lost | `on_window_focus_lost` | System | 窗口失去焦点时触发 | 无 | `new NodePath("System")` | `res://addons/flowkit/events/System/on_window_focus_lost.gd` |
 | 自定义信号 | `on_custom_signal` | System | 监听自定义信号触发 | `"信号名"` (String): 信号名称 | `new NodePath("System")` | `res://addons/flowkit/events/System/on_custom_signal.gd` |
+| 敌人数量归零时 | `on_enemy_count_zero` | System | 敌人数量从 >0 变为 0 时触发（关卡结束） | 无 | `new NodePath("System")` | `res://addons/flowkit/events/System/on_enemy_count_zero.gd` |
+| 敌人数量突破零时 | `on_enemy_count_nonzero` | System | 敌人数量从 0 变为 >0 时触发（关卡开始） | 无 | `new NodePath("System")` | `res://addons/flowkit/events/System/on_enemy_count_nonzero.gd` |
+| 敌人数量变化时 | `on_enemy_count_changed` | System | 敌人数量变化超过阈值时触发 | `"最小变化量"` (int): 最小绝对变化量 (默认: `1`) | `new NodePath("System")` | `res://addons/flowkit/events/System/on_enemy_count_changed.gd` |
 
 ---
 
@@ -70,6 +73,7 @@
 | Is Window Focused | `is_window_focused` | System | 检查窗口是否有焦点 | 无 | `new NodePath("System")` | `res://addons/flowkit/conditions/System/is_window_focused.gd` |
 | Is Window Fullscreen | `is_window_fullscreen` | System | 检查窗口是否全屏 | 无 | `new NodePath("System")` | `res://addons/flowkit/conditions/System/is_window_fullscreen.gd` |
 | Only Once When Looped | `only_once_when_looped` | System | 循环时仅运行一次 | 无 | `new NodePath("System")` | `res://addons/flowkit/conditions/System/only_once_when_looped.gd` |
+| 比较敌人数量 | `compare_enemy_count` | System | 比较场景中 "enemy" 组的敌人数量 | `"比较运算符"` (String): '==', '!=', '<', '>', '<=', '>=' (默认: `>=`)<br>`"数量"` (int): 比较值 (默认: `0`) | `new NodePath("System")` | `res://addons/flowkit/conditions/System/compare_enemy_count.gd` |
 
 ---
 
@@ -92,6 +96,11 @@
 | 打印碰撞对象名称 | `printerr_last_collider_name` | Entity, CharacterBody2D | 打印最近碰撞对象名称 | 无 | `new NodePath(".")` 或子节点 | `res://addons/flowkit/behaviors/characterbody2d_collision/actions/printerr_last_collider_name.gd` |
 | 改变血量 | `change_health` | Entity | 改变当前血量。需要 health Behavior | `"血量变化"` (int) (默认: `0`) | `new NodePath(".")` 或子节点 | `res://addons/flowkit/behaviors/health/actions/change_health.gd` |
 | 被 Monster 碰撞时掉血 | `damage_fcharacter_on_collision` | FCharacter | 检查碰撞物体是否是 Monster，造成伤害 | `"伤害值"` (int) (默认: `20`)<br>`"碰撞类型"` (String): 'body' 或 'area' (默认: `body`) | `new NodePath(".")` 或子节点 | `res://addons/flowkit/behaviors/area2d/actions/damage_fcharacter_on_collision.gd` |
+| 改变动画 | `change_animation` | Entity | 切换实体的动画（需要 animated_sprite2d behavior） | `"动画名"` (String): 动画名称（必须在 SpriteFrames 中存在） | `new NodePath(".")` 或子节点 | `res://addons/flowkit/actions/Entity/change_animation.gd` |
+| 设置碰撞启用状态 | `set_collision_enabled` | Entity, CharacterBody2D | 启用或禁用 CharacterBody2D 碰撞检测（需要 characterbody2d_collision behavior） | `"启用"` (bool): true=启用, false=禁用 (默认: `true`) | `new NodePath(".")` 或子节点 | `res://addons/flowkit/behaviors/characterbody2d_collision/actions/set_collision_enabled.gd` |
+| 设置标签文本 | `set_label_text` | Label | 设置 Label 节点的文本内容（需要 label behavior） | `"文本"` (String): 文本内容 | 场景中 Label 节点路径（如 `new NodePath("CanvasLayer/Label")`） | `res://addons/flowkit/actions/Entity/set_label_text.gd` |
+| 设置标签颜色 | `set_label_color` | Label | 设置 Label 节点的字体颜色（需要 label behavior） | `"颜色"` (Color): 字体颜色 (默认: `Color.WHITE`) | 场景中 Label 节点路径 | `res://addons/flowkit/actions/Entity/set_label_color.gd` |
+| 设置标签字体大小 | `set_label_font_size` | Label | 设置 Label 节点的字体大小（需要 label behavior） | `"字体大小"` (int): 字体大小像素值 (默认: `16`, 最小: `1`) | 场景中 Label 节点路径 | `res://addons/flowkit/actions/Entity/set_label_font_size.gd` |
 | 模拟按键点击 | `action_press` | System | 模拟按下输入动作 | `"按键名"` (String)<br>`"力度"` (float) | `new NodePath("System")` | `res://addons/flowkit/actions/System/action_press.gd` |
 | 模拟按键点击抬起 | `action_release` | System | 模拟释放输入动作 | `"Action"` (String) | `new NodePath("System")` | `res://addons/flowkit/actions/System/action_release.gd` |
 | 给数值变量加上一个数值 | `add_to_variable` | System | 给全局变量添加数值 | `"Name"` (String)<br>`"Value"` (float) | `new NodePath("System")` | `res://addons/flowkit/actions/System/add_to_variable.gd` |
@@ -124,6 +133,7 @@
 | Unpause Game | `unpause_game` | System | 恢复游戏 | 无 | `new NodePath("System")` | `res://addons/flowkit/actions/System/unpause_game.gd` |
 | Vibrate | `vibrate` | System | 移动设备震动 | `"DurationMs"` (int) | `new NodePath("System")` | `res://addons/flowkit/actions/System/vibrate.gd` |
 | Warp Mouse | `warp_mouse` | System | 移动鼠标到指定位置 | `"X"` (float)<br>`"Y"` (float) | `new NodePath("System")` | `res://addons/flowkit/actions/System/warp_mouse.gd` |
+| 发送自定义信号 | `emit_custom_signal` | System | 发送自定义信号（可被 on_custom_signal 事件监听） | `"信号名"` (String): 信号名称<br>`"信号数据"` (Variant, 可选): 信号携带的数据 | `new NodePath("System")` | `res://addons/flowkit/actions/System/emit_custom_signal.gd` |
 
 ---
 
@@ -142,6 +152,7 @@
 | 信号广播组件 | `signal_broadcaster` | Entity | 管理信号广播组件 | 无 | `res://addons/flowkit/behaviors/signal_broadcaster/signal_broadcaster.gd` |
 | 技能盒子组件 | `skill_box` | Entity | 管理技能数据配置 | `"skill_box_scene"` (Resource) (默认: `res://Framework/Component/RoleComponent/SkillBoxComponent.tscn`)<br>`"init_attack_skill_datas"` (Array[Resource]) (默认: `[]`)<br>`"init_skill_datas"` (Array[Resource]) (默认: `[]`)<br>`"init_halo_skill_datas"` (Array[Resource]) (默认: `[]`) | `res://addons/flowkit/behaviors/skill_box/skill_box.gd` |
 | 速度组件 | `speed` | Entity | 记录节点速度值 | `"速度"` (float) (默认: `50.0`) | `res://addons/flowkit/behaviors/speed/speed.gd` |
+| Label组件 | `label` | Label | 管理 Label 节点的文本、颜色、字体大小等属性 | `"Anchors Preset"` (String): 锚点预设 (默认: `TopLeft`)<br>`"text"` (String): 显示文本<br>`"Position X"` (float) (默认: `0.0`)<br>`"Position Y"` (float) (默认: `0.0`)<br>`"fontColor"` (Color) (默认: `Color.WHITE`)<br>`"fontSize"` (int) (默认: `16`)<br>`"ZIndex"` (int) (默认: `0`) | `res://addons/flowkit/behaviors/label/label.gd` |
 
 ---
 
@@ -175,5 +186,9 @@ new Godot.Collections.Dictionary {
 - `change_health` 动作 → 需要 `health` Behavior
 - `compare_health` 条件 → 需要 `health` Behavior
 - `compare_faction` 条件 → 需要 `faction` Behavior
+- `change_animation` 动作 → 需要 `animated_sprite2d` Behavior
+- `set_collision_enabled` 动作 → 需要 `characterbody2d_collision` Behavior
+- `set_label_text/set_label_color/set_label_font_size` 动作 → 需要 `label` Behavior
+- `on_enemy_count_zero/nonzero/changed` 事件 → 需要场景中存在 "enemy" 组的节点
 
 ---

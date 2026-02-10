@@ -107,11 +107,16 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
   "scene_name": "GameDemo",
   "scene_path": "res://RequirementImp/Scenes/GameDemo.tscn",
   "entities": [
-    {"name": "Map1", "scene": "res://Game_flowkit/Entity/Map/Map1.tscn", "position": [0, 0]},
+    {"name": "Door", "scene": "res://Game_flowkit/Entity/Items/Door.tscn", "position": [-11, -935]},
     {"name": "FCharacterTest", "scene": "res://Game_flowkit/Entity/Player/FCharacterTest.tscn", "position": [-67, -103]},
-    {"name": "FMonsterTest", "scene": "res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn", "position": [16, 3]},
-    {"name": "Door", "scene": "res://Game_flowkit/Entity/Items/Door.tscn", "position": [2, -413]},
-    {"name": "BornPoint", "scene": "res://Game_flowkit/Entity/Items/BornPoint.tscn", "position": [0, 489]}
+    {"name": "BornPoint", "scene": "res://Game_flowkit/Entity/Items/BornPoint.tscn", "position": [-1, 728]},
+    {"name": "Map1", "scene": "res://Game_flowkit/Entity/Map/Map2.tscn", "position": [0, 0]},
+    {"name": "CanvasLayer", "scene": "res://Game_flowkit/EntityTemplate/CanvasLayer.tscn"},
+    {"name": "Label", "scene": "res://Game_flowkit/EntityTemplate/Label.tscn", "parent": "CanvasLayer"},
+    {"name": "FMonsterTest", "scene": "res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn", "position": [16, -7]},
+    {"name": "FMonsterTest2", "scene": "res://Game_flowkit/Entity/Enemy/FMonsterTest2.tscn", "position": [2, -2]},
+    {"name": "FMonsterTest3", "scene": "res://Game_flowkit/Entity/Enemy/FMonsterTest3.tscn"},
+    {"name": "FMonsterTest4", "scene": "res://Game_flowkit/Entity/Enemy/FMonsterTest4.tscn"}
   ]
 }
 ```
@@ -122,22 +127,36 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 ```json
 {
   "scene_path": "res://RequirementImp/Scenes/GameDemo.tscn",
-  "node_names": ["Map1", "FCharacterTest", "FMonsterTest", "Door", "BornPoint"],
+  "node_names": ["Door", "FCharacterTest", "BornPoint", "Map1", "CanvasLayer/Label", "FMonsterTest", "FMonsterTest2", "FMonsterTest3", "FMonsterTest4"],
   "events": [
     {
-      "event_id": "on_ready",
-      "target": "System",
+      "event_id": "on_ready", "target": "System",
       "actions": [
-        {"action_id": "set_node_enabled", "target": "FMonsterTest", "inputs": {"启用": false}}
+        {"action_id": "set_node_enabled", "target": "FMonsterTest", "inputs": {"启用": false}},
+        {"action_id": "set_node_enabled", "target": "FMonsterTest2", "inputs": {"启用": false}},
+        {"action_id": "set_node_enabled", "target": "FMonsterTest3", "inputs": {"启用": false}},
+        {"action_id": "set_node_enabled", "target": "FMonsterTest4", "inputs": {"启用": false}}
       ]
     },
     {
-      "event_id": "on_custom_signal",
-      "target": "System",
-      "inputs": {"信号名": "进入下一关"},
+      "event_id": "on_ready", "target": "System",
       "actions": [
-        {"action_id": "instantiate_entity_random_position", "target": "FMonsterTest", "inputs": {"X 最小值": -100, "X 最大值": 100, "Y 最小值": -100, "Y 最大值": 100}},
-        {"action_id": "teleport_to_node", "target": "FCharacterTest", "inputs": {"目标节点路径": "BornPoint"}}
+        {"action_id": "set_variable", "target": "System", "inputs": {"Name": "stageLevel", "Value": "0"}}
+      ]
+    },
+    {
+      "event_id": "on_custom_signal", "target": "System", "inputs": {"信号名": "进入下一关"},
+      "actions": [
+        {"action_id": "teleport_to_node", "target": "FCharacterTest", "inputs": {"目标节点路径": "BornPoint"}},
+        {"action_id": "set_variable", "target": "System", "inputs": {"Name": "stageLevel", "Value": "stageLevel + 1"}},
+        {"action_id": "set_label_text", "target": "CanvasLayer/Label", "inputs": {"文本": "  \"第%d关\" % stageLevel"}}
+      ]
+    },
+    {
+      "event_id": "on_custom_signal", "target": "System", "inputs": {"信号名": "进入下一关"},
+      "conditions": [{"condition_id": "compare_variable", "target": "System", "inputs": {"Name": "stageLevel", "Comparison": "==", "Value": "1"}}],
+      "actions": [
+        {"action_id": "instantiate_entity_random_position", "target": "FMonsterTest", "inputs": {"X 最小值": "-200", "X 最大值": "200", "Y 最小值": "-400", "Y 最大值": "400"}}
       ]
     }
   ]
@@ -153,16 +172,46 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 
 ## 常见游戏逻辑模式
 
-### 模式1: 清怪过关
-**需求**: 消灭所有敌人后触发某事件
+### 模式1: 清怪过关（门自动控制）
+**需求**: 消灭所有敌人后门打开，有敌人时门关闭
 
-**FlowKit实现**:
+**场景事件表 FlowKit实现**:
 ```
-事件: on_custom_signal, target: "System", inputs: {"信号名": "敌人全灭"}
-动作: set_node_enabled, target: "Door", inputs: {"启用": true}
+# 初始化：禁用所有怪物模板
+事件: on_ready, target: "System"
+动作1: set_node_enabled, target: "FMonsterTest", inputs: {"启用": false}
+动作2: set_node_enabled, target: "FMonsterTest2", inputs: {"启用": false}  // 多种怪物时
+...
+
+# 收到"进入下一关"信号时：传送玩家+生成怪物
+事件: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+动作1: teleport_to_node, target: "FCharacterTest", inputs: {"目标节点路径": "BornPoint"}
+动作2: instantiate_entity_random_position, target: "FMonsterTest", inputs: {"X 最小值": "-200", ...}
 ```
 
-**前置条件**: 敌人死亡时需要检测是否全灭并发送信号
+**门事件表 FlowKit实现**（Door.tscn 自身的事件表）:
+```
+# 初始化：关闭门碰撞
+事件: on_ready, target: "System"
+动作: set_collision_enabled, target: ".", inputs: {"启用": false}
+
+# 敌人清零时：开门
+事件: on_enemy_count_zero, target: "System"
+动作1: set_collision_enabled, target: ".", inputs: {"启用": false}  // 关闭碰撞让玩家通过
+动作2: change_animation, target: ".", inputs: {"动画名": "open_down"}
+
+# 有敌人时：关门
+事件: on_enemy_count_nonzero, target: "System"
+动作1: set_collision_enabled, target: ".", inputs: {"启用": true}   // 开启碰撞阻挡玩家
+动作2: change_animation, target: ".", inputs: {"动画名": "close_down"}
+
+# 碰到门时：检查是否可以进入下一关
+事件: on_area2d_collision, target: ".", inputs: {"碰撞类型": "body"}
+条件: compare_enemy_count, target: "System", inputs: {"比较运算符": "<=", "数量": "0"}
+动作: emit_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+```
+
+**注意**: 门的事件表是在 Door.tscn 实体自身上的，不是在游戏场景上。
 
 ### 模式2: 收集过关
 **需求**: 收集N个道具后触发某事件
@@ -183,15 +232,43 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 动作: replace_game_scene, target: "System", inputs: {"scene": "res://RequirementImp/Scenes/NextLevel.tscn"}
 ```
 
-### 模式4: 波次生成
-**需求**: 消灭当前波次敌人后生成下一波
+### 模式4: 关卡递增波次生成
+**需求**: 每关生成不同种类/数量的敌人，随关卡递增难度
 
 **FlowKit实现**:
 ```
+# 初始化关卡变量
+事件: on_ready, target: "System"
+动作: set_variable, target: "System", inputs: {"Name": "stageLevel", "Value": "0"}
+
+# 通用逻辑：每次进入下一关时传送玩家 + 关卡+1 + 更新UI
 事件: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
-动作1: instantiate_entity_random_position, target: "FMonsterTest", inputs: {"X 最小值": -100, "X 最大值": 100, "Y 最小值": -100, "Y 最大值": 100}
-动作2: teleport_to_node, target: "FCharacterTest", inputs: {"目标节点路径": "BornPoint"}
+动作1: teleport_to_node, target: "FCharacterTest", inputs: {"目标节点路径": "BornPoint"}
+动作2: set_variable, target: "System", inputs: {"Name": "stageLevel", "Value": "stageLevel + 1"}
+动作3: set_label_text, target: "CanvasLayer/Label", inputs: {"文本": "  \"第%d关\" % stageLevel"}
+
+# 关卡1：生成1种怪物
+事件: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": "==", "Value": "1"}
+动作: instantiate_entity_random_position, target: "FMonsterTest", inputs: {...}
+
+# 关卡2：生成2种怪物
+事件: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": "==", "Value": "2"}
+动作1: instantiate_entity_random_position, target: "FMonsterTest", inputs: {...}
+动作2: instantiate_entity_random_position, target: "FMonsterTest2", inputs: {...}
+
+# 关卡3：生成3种怪物（类推）
+# 关卡4+：生成4种怪物（使用 ">=" 条件处理后续所有关卡）
+事件: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": ">=", "Value": "4"}
+动作: instantiate 所有4种怪物
 ```
+
+**关键要素**:
+- `set_variable` / `compare_variable` 实现关卡状态管理
+- 最后一个关卡用 `>=` 条件处理无限递增
+- `set_label_text` 更新 UI 显示当前关卡
 
 ### 模式5: 门/机关控制
 **需求**: 满足条件后开门
@@ -216,10 +293,20 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 | 实体 | 路径 | 说明 |
 |------|------|------|
 | 玩家 | `res://Game_flowkit/Entity/Player/FCharacterTest.tscn` | 预制玩家角色 |
-| 怪物 | `res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn` | 预制敌人角色 |
-| 门 | `res://Game_flowkit/Entity/Items/Door.tscn` | 门实体 |
+| 怪物1 | `res://Game_flowkit/Entity/Enemy/FMonsterTest.tscn` | 预制敌人角色（基础） |
+| 怪物2 | `res://Game_flowkit/Entity/Enemy/FMonsterTest2.tscn` | 预制敌人角色（变种2） |
+| 怪物3 | `res://Game_flowkit/Entity/Enemy/FMonsterTest3.tscn` | 预制敌人角色（变种3） |
+| 怪物4 | `res://Game_flowkit/Entity/Enemy/FMonsterTest4.tscn` | 预制敌人角色（变种4） |
+| 门 | `res://Game_flowkit/Entity/Items/Door.tscn` | 门实体（内置清怪开门逻辑） |
 | 出生点 | `res://Game_flowkit/Entity/Items/BornPoint.tscn` | 玩家出生/重置点 |
-| 地图 | `res://Game_flowkit/Entity/Map/Map1.tscn` | 地图背景 |
+| 地图1 | `res://Game_flowkit/Entity/Map/Map1.tscn` | 地图背景1 |
+| 地图2 | `res://Game_flowkit/Entity/Map/Map2.tscn` | 地图背景2 |
+
+### UI模板
+| 实体 | 路径 | 说明 |
+|------|------|------|
+| CanvasLayer | `res://Game_flowkit/EntityTemplate/CanvasLayer.tscn` | UI容器层（固定在屏幕上） |
+| Label | `res://Game_flowkit/EntityTemplate/Label.tscn` | 文本标签（放在CanvasLayer下） |
 
 ### 行为树模板
 | 行为树 | 路径 | 用途 |
@@ -237,21 +324,22 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 ## 完整示例
 
 ### 用户需求
-> "做一个游戏demo，有一个地图，然后有野怪，野怪消灭完成后上方的门打开，然后进入下一关"
+> "做一个游戏demo，有一个地图，然后有多种野怪，野怪消灭完成后上方的门打开，进入下一关，每关递增怪物种类，要显示当前关卡数"
 
 ### Step 1: 需求分析
 **场景实体**:
 - 地图背景 (Map1)
-- 玩家角色 (FCharacterTest)
-- 野怪模板 (FMonsterTest) - 用于实例化
-- 门 (Door)
+- 玩家角色 (FCharacterTest) - 完整配置（health, area2d, faction, skill_box等）
+- 野怪模板 (FMonsterTest, FMonsterTest2, FMonsterTest3, FMonsterTest4) - 4种怪物
+- 门 (Door) - 内置清怪开门逻辑
 - 出生点 (BornPoint)
+- UI层 (CanvasLayer + Label) - 显示关卡数
 
 **游戏逻辑**:
-1. 场景加载时：禁用野怪模板（作为实例化源）
-2. 收到"进入下一关"信号时：
-   - 在随机位置生成野怪
-   - 将玩家传送到出生点
+1. 初始化：禁用所有野怪模板 + 初始化关卡变量 stageLevel=0
+2. 门逻辑（Door自带）：敌人清零→开门，有敌人→关门，碰到门→发射"进入下一关"信号
+3. 收到"进入下一关"信号时：传送玩家 + 关卡+1 + 更新UI
+4. 条件分支：根据 stageLevel 生成不同数量的怪物种类
 
 ### Step 2: 调用Skill
 
@@ -259,24 +347,53 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 ```
 创建场景 res://RequirementImp/Scenes/GameDemo.tscn
 实体:
-- Map1 地图背景
-- Door 位置(2, -413)
-- FCharacterTest 位置(-67, -103)
-- FMonsterTest 位置(16, 3)
-- BornPoint 位置(0, 489)
+- Door 位置(-11, -935)
+- FCharacterTest 位置(-67, -103) 带完整behavior配置
+- BornPoint 位置(-1, 728)
+- Map1(Map2) 地图背景
+- CanvasLayer (UI容器)
+  - Label 文本"第1关" (放在CanvasLayer下)
+- FMonsterTest 位置(16, -7)
+- FMonsterTest2 位置(2, -2)
+- FMonsterTest3
+- FMonsterTest4
 ```
 
-**2.2 调用 godot-event-builder**
+**2.2 调用 godot-event-builder（游戏场景事件表）**
 ```
 场景: res://RequirementImp/Scenes/GameDemo.tscn
-可用节点: Map1, FCharacterTest, FMonsterTest, Door, BornPoint
+可用节点: Door, FCharacterTest, BornPoint, Map1, CanvasLayer/Label, FMonsterTest, FMonsterTest2, FMonsterTest3, FMonsterTest4
 
-事件1: on_ready, target: "System", inputs: {}
-  动作: set_node_enabled, target: "FMonsterTest", inputs: {"启用": false}
+事件1: on_ready, target: "System"
+  动作1: set_node_enabled, target: "FMonsterTest", inputs: {"启用": false}
+  动作2: set_node_enabled, target: "FMonsterTest2", inputs: {"启用": false}
+  动作3: set_node_enabled, target: "FMonsterTest3", inputs: {"启用": false}
+  动作4: set_node_enabled, target: "FMonsterTest4", inputs: {"启用": false}
 
-事件2: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
-  动作1: instantiate_entity_random_position, target: "FMonsterTest", inputs: {"X 最小值": -100, "X 最大值": 100, "Y 最小值": -100, "Y 最大值": 100}
-  动作2: teleport_to_node, target: "FCharacterTest", inputs: {"目标节点路径": "BornPoint"}
+事件2: on_ready, target: "System"
+  动作: set_variable, target: "System", inputs: {"Name": "stageLevel", "Value": "0"}
+
+事件3: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+  动作1: teleport_to_node, target: "FCharacterTest", inputs: {"目标节点路径": "BornPoint"}
+  动作2: set_variable, target: "System", inputs: {"Name": "stageLevel", "Value": "stageLevel + 1"}
+  动作3: set_label_text, target: "CanvasLayer/Label", inputs: {"文本": "  \"第%d关\" % stageLevel"}
+
+事件4: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+  条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": "==", "Value": "1"}
+  动作: instantiate_entity_random_position, target: "FMonsterTest", inputs: {"X 最小值": "-200", "X 最大值": "200", "Y 最小值": "-400", "Y 最大值": "400"}
+
+事件5: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+  条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": "==", "Value": "2"}
+  动作1: instantiate_entity_random_position, target: "FMonsterTest", inputs: {...}
+  动作2: instantiate_entity_random_position, target: "FMonsterTest2", inputs: {...}
+
+事件6: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+  条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": "==", "Value": "3"}
+  动作1-3: instantiate FMonsterTest, FMonsterTest2, FMonsterTest3
+
+事件7: on_custom_signal, target: "System", inputs: {"信号名": "进入下一关"}
+  条件: compare_variable, target: "System", inputs: {"Name": "stageLevel", "Comparison": ">=", "Value": "4"}
+  动作1-4: instantiate FMonsterTest, FMonsterTest2, FMonsterTest3, FMonsterTest4
 ```
 
 **2.3 验证**
@@ -285,6 +402,7 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 ### 最终结果
 - 场景文件: `res://RequirementImp/Scenes/GameDemo.tscn`
 - FlowKit事件表: 自动保存到 `res://addons/flowkit/saved/event_sheet/`
+- 门的事件表: Door.tscn 自带（已内置清怪开门逻辑）
 
 ## 注意事项
 
@@ -295,12 +413,30 @@ description: 构建完整游戏场景的高层技能。当用户描述游戏玩�
 
 2. **实体命名一致性**：
    - FlowKit事件中引用的节点名必须与场景中的节点名一致
-   - 建议使用有意义的名称（如Monster1, Monster2而不是自动生成的名称）
+   - 建议使用有意义的名称（如FMonsterTest, FMonsterTest2而不是自动生成的名称）
 
 3. **信号约定**：
-   - 使用中文信号名便于理解（如"进入下一关"、"敌人全灭"）
-   - 信号需要在其他地方触发（如敌人死亡脚本中）
+   - 使用中文信号名便于理解（如"进入下一关"）
+   - 信号可通过 `emit_custom_signal` 动作发射（如门碰撞时）
+   - 信号通过 `on_custom_signal` 事件监听
 
 4. **模板与实例**：
    - 作为实例化源的实体，初始应禁用（on_ready时set_node_enabled=false）
    - 这样它不会在场景中显示，但可以被instantiate_entity动作复制
+   - 多种怪物时，每种怪物模板都需要单独禁用
+
+5. **门的事件表是内置的**：
+   - Door.tscn 自带事件表，包含清怪开门/关门逻辑
+   - 门通过 `on_enemy_count_zero`/`on_enemy_count_nonzero` 自动控制开关
+   - 门碰撞时通过 `emit_custom_signal` 发射"进入下一关"信号
+   - 游戏场景只需监听"进入下一关"信号做后续逻辑
+
+6. **关卡变量系统**：
+   - 使用 `set_variable` 初始化和更新关卡变量
+   - 使用 `compare_variable` 条件分支处理不同关卡
+   - 使用 `set_label_text` 更新UI显示（target_node 用路径格式如 "CanvasLayer/Label"）
+
+7. **UI层结构**：
+   - CanvasLayer 作为UI容器（固定在屏幕上不随相机移动）
+   - Label 放在 CanvasLayer 下显示文本信息
+   - Label 需要 `label` behavior
